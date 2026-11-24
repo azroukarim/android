@@ -4,15 +4,11 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 ## Téléchargement
 
-Les APK sont attachés à la release GitHub :
-
-**https://github.com/azroukarim/android/releases/tag/v5.3.75**
-
 | Fichier | Architecture |
 | --- | --- |
-| `Streamplayer_v5.3.75_arm32.apk` | `armeabi-v7a` (boîtiers TV 32 bits) |
-| `Streamplayer_v5.3.75_arm64.apk` | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| `Streamplayer_v5.3.75_x86_64.apk` | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.75_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.75_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.75_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.75_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.75_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.75_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -22,7 +18,7 @@ L'application lit :
 https://raw.githubusercontent.com/azroukarim/android/main/version.json
 ```
 
-`version.json` contient la version, les notes, le SHA-256 et l'URL de chaque APK.
+`version.json` contient la version, les notes et le SHA-256 de chaque APK.
 Les sommes sont aussi disponibles dans `SHA256SUMS`.
 
 ## Panneau d'activation
