@@ -1,18 +1,21 @@
 {
-  "version": "5.3.74",
-  "notes": "Premiere publication sur android repo: episodes Stalker + seek 30s.",
+  "version": "5.3.75",
+  "notes": "Activation par boitier (Supabase), episodes Stalker/restream, barre de seek 30 s.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.74_arm64.apk",
-      "sha256": "865b858d7ce6a51cd04815e4b28bfafb3c066550ea7bdb17c6bcca9fb68ddb32"
+      "name": "Streamplayer_v5.3.75_arm64.apk",
+      "sha256": "f171f076eab3165f346abc0e4407aff6ed6280a517b8140b5f643fff59140b2d",
+      "url": "https://github.com/azroukarim/android/releases/download/v5.3.75/Streamplayer_v5.3.75_arm64.apk"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.74_arm32.apk",
-      "sha256": "263ac280c679833a4cb8a931c1f90dda3baa2c472b6c1d35fd12a60e0a7e8921"
+      "name": "Streamplayer_v5.3.75_arm32.apk",
+      "sha256": "791991022ecba3793d584ae04979288ab0b52676a7019f90691e3310efa8ea03",
+      "url": "https://github.com/azroukarim/android/releases/download/v5.3.75/Streamplayer_v5.3.75_arm32.apk"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.74_x86_64.apk",
-      "sha256": "b3f40a878652262ac90b552e5efe22c3b6e9ae4b9bade123000955a7f554abc0"
+      "name": "Streamplayer_v5.3.75_x86_64.apk",
+      "sha256": "e7cdf36a1d263c6159f2e4ab2734901bc2815da682c9cc0487dbd5b2e5a29f7f",
+      "url": "https://github.com/azroukarim/android/releases/download/v5.3.75/Streamplayer_v5.3.75_x86_64.apk"
     }
   }
 }

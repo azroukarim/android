@@ -1,0 +1,96 @@
+# Panneau d'activation Streamplayer
+
+Panneau statique (HTML/JS) hébergé par GitHub Pages et connecté à Supabase.
+
+## 1. Créer le compte administrateur
+
+Dans Supabase :
+
+1. **Authentication → Users → Add user**
+2. Email : `mohammedridaeltaoilib@gmail.com`
+3. Choisissez un mot de passe et cochez **Auto Confirm User**.
+
+## 2. Créer la table des administrateurs et les policies
+
+Dans **SQL Editor**, exécutez :
+
+```sql
+create table if not exists public.admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  email text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.admins enable row level security;
+
+drop policy if exists "admins can read themselves" on public.admins;
+create policy "admins can read themselves"
+  on public.admins for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.admins where user_id = auth.uid()
+  );
+$$;
+
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated;
+
+drop policy if exists "admins read licenses" on public.licenses;
+create policy "admins read licenses" on public.licenses
+  for select to authenticated using (public.is_admin());
+
+drop policy if exists "admins insert licenses" on public.licenses;
+create policy "admins insert licenses" on public.licenses
+  for insert to authenticated with check (public.is_admin());
+
+drop policy if exists "admins update licenses" on public.licenses;
+create policy "admins update licenses" on public.licenses
+  for update to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists "admins delete licenses" on public.licenses;
+create policy "admins delete licenses" on public.licenses
+  for delete to authenticated using (public.is_admin());
+
+insert into public.admins (user_id, email)
+select id, email
+from auth.users
+where email = 'mohammedridaeltaoilib@gmail.com'
+on conflict (user_id) do nothing;
+```
+
+## 3. Activer GitHub Pages
+
+Dépôt `azroukarim/android` :
+
+1. **Settings → Pages**
+2. Source : **Deploy from a branch**
+3. Branche : `main`, dossier : `/docs`
+4. **Save**
+
+Le panneau sera disponible à :
+
+```
+https://azroukarim.github.io/android/
+```
+
+## 4. Utilisation
+
+- Connectez-vous avec l'email/mot de passe administrateur.
+- Ajoutez la MAC ou l'ANDROID_ID affiché par l'application.
+- `Activer` / `Désactiver` contrôle l'accès du boîtier.
+- La suppression est définitive.
+
+> Le panneau utilise uniquement la clé **publishable**. Les policies RLS
+> n'autorisent que les comptes présents dans `public.admins`. Ne mettez jamais
+> la clé `secret` / `service_role` dans ce fichier.
