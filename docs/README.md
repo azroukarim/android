@@ -97,6 +97,10 @@ https://azroukarim.github.io/android/
   `+ 2 heures`, `+ 24 heures`, `+ 12 mois`, `Jusqu'à 2200` ou `Illimité`.
   Les durées s'ajoutent à la date existante si elle est encore dans le futur,
   donc « + 2 heures » prolonge un abonnement au lieu de le raccourcir.
+- **Modifier** ouvre une fenêtre avec tous les champs de la licence
+  (`device_fingerprint`, `license_key`, notes, date d'activation, expiration,
+  actif/inactif) ; l'enregistrement met à jour la ligne en conservant son `id`.
+- La table affiche les colonnes **Activation** et **Expiration** côte à côte.
 - La suppression est définitive.
 
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS

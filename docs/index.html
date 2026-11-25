@@ -93,6 +93,13 @@
       background: #10203c;
     }
     #expiryHint { display: block; margin-top: 6px; font-size: 13px; min-height: 18px; }
+    dialog {
+      width: min(560px, 94vw); max-height: 92vh; overflow: auto;
+      border: 1px solid var(--line); color: var(--text);
+    }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.68); }
+    .check { display: flex; align-items: center; gap: 8px; }
+    .check input { width: auto; }
     .empty { padding: 28px; text-align: center; color: var(--muted); }
     #toast {
       position: fixed; right: 18px; bottom: 18px; max-width: 360px;
@@ -155,6 +162,10 @@
               <input id="fingerprint" placeholder="AA:BB:CC:DD:EE:FF ou 54203c34b77c36f2" required />
             </div>
             <div>
+              <label for="activated">Activation (optionnel)</label>
+              <input id="activated" type="datetime-local" />
+            </div>
+            <div>
               <label for="expires">Expiration (optionnel)</label>
               <input id="expires" type="datetime-local" />
               <div class="presets" id="expiryPresets" role="group" aria-label="Durées rapides">
@@ -193,6 +204,7 @@
               <tr>
                 <th>Identifiant</th>
                 <th>Statut</th>
+                <th>Activation</th>
                 <th>Expiration</th>
                 <th>Notes</th>
                 <th>Actions</th>
@@ -205,6 +217,40 @@
       </div>
     </main>
   </div>
+
+  <dialog id="editDialog" class="card" aria-labelledby="editTitle">
+    <form id="editForm">
+      <h2 id="editTitle" style="margin:0 0 4px;font-size:19px">Modifier le boîtier</h2>
+      <p class="muted" style="margin:0 0 10px">Tous les champs de la licence peuvent être corrigés ici.</p>
+      <label for="editFingerprint">device_fingerprint</label>
+      <input id="editFingerprint" required />
+      <label for="editLicenseKey">license_key</label>
+      <input id="editLicenseKey" />
+      <label for="editNotes">Notes</label>
+      <input id="editNotes" />
+      <label for="editActivated">Date d’activation</label>
+      <input id="editActivated" type="datetime-local" />
+      <label for="editExpires">Expiration</label>
+      <input id="editExpires" type="datetime-local" />
+      <div class="presets" id="editExpiryPresets" role="group" aria-label="Durées rapides">
+        <button type="button" data-kind="2h">+ 2 heures</button>
+        <button type="button" data-kind="24h">+ 24 heures</button>
+        <button type="button" data-kind="12m">+ 12 mois</button>
+        <button type="button" data-kind="2200">Jusqu’à 2200</button>
+        <button type="button" data-kind="never">Illimité</button>
+      </div>
+      <span id="editExpiryHint" class="muted"></span>
+      <label class="check" for="editActive" style="margin-top:12px">
+        <input id="editActive" type="checkbox" /> Licence active
+      </label>
+      <input id="editId" type="hidden" />
+      <div class="row" style="margin-top:18px;justify-content:flex-end">
+        <button id="editCancel" class="ghost" type="button">Annuler</button>
+        <button class="primary" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="toast"></div>
 
   <script type="module">
@@ -242,22 +288,30 @@
         `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
-    function clearPresetSelection() {
-      for (const button of $("expiryPresets").querySelectorAll("button")) {
+    function clearPresetSelection(containerId = "expiryPresets") {
+      for (const button of $(containerId).querySelectorAll("button")) {
         button.setAttribute("aria-pressed", "false");
       }
     }
 
-    function updateExpiryHint() {
-      const raw = $("expires").value;
+    function updateExpiryHint(inputId = "expires", hintId = "expiryHint") {
+      const raw = $(inputId).value;
       const date = raw ? new Date(raw) : null;
       if (!raw) {
-        $("expiryHint").textContent = "Aucune expiration : licence illimitée";
+        $(hintId).textContent = "Aucune expiration : licence illimitée";
       } else if (!date || Number.isNaN(date.getTime())) {
-        $("expiryHint").textContent = "Date invalide";
+        $(hintId).textContent = "Date invalide";
       } else {
-        $("expiryHint").textContent = "Expire le " + fmtDate(date.toISOString());
+        $(hintId).textContent = "Expire le " + fmtDate(date.toISOString());
       }
+    }
+
+    // datetime-local value -> ISO timestamp, or null when left empty.
+    function isoFromInput(inputId) {
+      const raw = $(inputId).value;
+      if (!raw) return null;
+      const date = new Date(raw);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
     }
 
     // Absolute date for a preset. Durations are added to [baseMs] when it is
@@ -279,13 +333,18 @@
       return null;
     }
 
-    function applyExpiryPreset(button) {
+    function applyExpiryPreset(
+      button,
+      containerId = "expiryPresets",
+      inputId = "expires",
+      hintId = "expiryHint",
+    ) {
       const kind = button.dataset.kind;
       const date = presetDate(kind);
-      $("expires").value = date ? toLocalInput(date) : "";
-      clearPresetSelection();
+      $(inputId).value = date ? toLocalInput(date) : "";
+      clearPresetSelection(containerId);
       if (date) button.setAttribute("aria-pressed", "true");
-      updateExpiryHint();
+      updateExpiryHint(inputId, hintId);
     }
 
     async function extendLicense(item, kind) {
@@ -300,6 +359,59 @@
         .eq("id", item.id);
       if (error) return toast("Modification impossible : " + error.message, true);
       toast(date ? "Expiration : " + fmtDate(date.toISOString()) : "Licence illimitée");
+      await load();
+    }
+
+    function openEdit(item) {
+      $("editId").value = item.id;
+      $("editFingerprint").value = item.device_fingerprint || "";
+      $("editLicenseKey").value = item.license_key || "";
+      $("editNotes").value = item.notes || "";
+      $("editActive").checked = item.is_active === true;
+      const activation = item.activated_at ? new Date(item.activated_at) : null;
+      $("editActivated").value =
+        activation && !Number.isNaN(activation.getTime())
+          ? toLocalInput(activation)
+          : "";
+      const end = item.expires_at ? new Date(item.expires_at) : null;
+      $("editExpires").value =
+        end && !Number.isNaN(end.getTime()) ? toLocalInput(end) : "";
+      clearPresetSelection("editExpiryPresets");
+      updateExpiryHint("editExpires", "editExpiryHint");
+      $("editDialog").showModal();
+    }
+
+    async function saveEdit(event) {
+      event.preventDefault();
+      const id = $("editId").value;
+      const fingerprint = $("editFingerprint").value.trim();
+      if (!id || !fingerprint) {
+        return toast("Identifiant obligatoire", true);
+      }
+      const raw = $("editExpires").value;
+      let expires = null;
+      if (raw) {
+        const date = new Date(raw);
+        if (Number.isNaN(date.getTime())) {
+          return toast("Date d’expiration invalide", true);
+        }
+        expires = date.toISOString();
+      }
+
+      const { error } = await supabase
+        .from("licenses")
+        .update({
+          device_fingerprint: fingerprint,
+          license_key: $("editLicenseKey").value.trim() || null,
+          notes: $("editNotes").value.trim() || null,
+          activated_at: isoFromInput("editActivated"),
+          expires_at: expires,
+          is_active: $("editActive").checked,
+        })
+        .eq("id", id);
+      if (error) return toast("Modification impossible : " + error.message, true);
+      $("editDialog").close();
+      toast("Boîtier modifié");
       await load();
     }
 
@@ -358,6 +470,11 @@
         badge.textContent = statusLabel(item);
         st.appendChild(badge);
 
+        const act = document.createElement("td");
+        act.className = "mono";
+        act.dataset.label = "Activation";
+        act.textContent = fmtDate(item.activated_at);
+
         const exp = document.createElement("td");
         exp.dataset.label = "Expiration";
         exp.textContent = fmtDate(item.expires_at);
@@ -374,6 +491,11 @@
         toggle.className = "small " + (item.is_active ? "danger" : "primary");
         toggle.textContent = item.is_active ? "Désactiver" : "Activer";
         toggle.addEventListener("click", () => toggleActive(item));
+
+        const edit = document.createElement("button");
+        edit.className = "small ghost";
+        edit.textContent = "Modifier";
+        edit.addEventListener("click", () => openEdit(item));
 
         const remove = document.createElement("button");
         remove.className = "small ghost";
@@ -415,8 +537,8 @@
           if (kind) await extendLicense(item, kind);
         });
 
-        actions.append(toggle, extend, copy, remove);
-        tr.append(fp, st, exp, notes, actions);
+        actions.append(toggle, edit, extend, copy, remove);
+        tr.append(fp, st, act, exp, notes, actions);
         rows.appendChild(tr);
       }
     }
@@ -461,13 +583,17 @@
       const expires = expiresRaw ? new Date(expiresRaw).toISOString() : null;
 
       if (!fingerprint) return;
+      const payload = {
+        device_fingerprint: fingerprint,
+        notes: notes || null,
+        expires_at: expires,
+        is_active: true,
+      };
+      // Leave activated_at untouched when re-adding an existing device.
+      const activated = isoFromInput("activated");
+      if (activated) payload.activated_at = activated;
       const { error } = await supabase.from("licenses").upsert(
-        {
-          device_fingerprint: fingerprint,
-          notes: notes || null,
-          expires_at: expires,
-          is_active: true,
-        },
+        payload,
         { onConflict: "device_fingerprint" },
       );
       if (error) return toast("Ajout impossible : " + error.message, true);
@@ -514,17 +640,24 @@
     });
 
     $("addForm").addEventListener("submit", addLicense);
-    $("expiryPresets").addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-      if (!button) return;
-      event.preventDefault();
-      applyExpiryPreset(button);
-    });
-    $("expires").addEventListener("input", () => {
-      clearPresetSelection();
-      updateExpiryHint();
-    });
-    updateExpiryHint();
+    $("editForm").addEventListener("submit", saveEdit);
+    $("editCancel").addEventListener("click", () => $("editDialog").close());
+    for (const [container, input, hint] of [
+      ["expiryPresets", "expires", "expiryHint"],
+      ["editExpiryPresets", "editExpires", "editExpiryHint"],
+    ]) {
+      $(container).addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        event.preventDefault();
+        applyExpiryPreset(button, container, input, hint);
+      });
+      $(input).addEventListener("input", () => {
+        clearPresetSelection(container);
+        updateExpiryHint(input, hint);
+      });
+      updateExpiryHint(input, hint);
+    }
     $("refresh").addEventListener("click", load);
     $("search").addEventListener("input", render);
     $("filter").addEventListener("change", render);
