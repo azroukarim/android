@@ -66,6 +66,7 @@
     button.danger { background: #7f1d2d; }
     button.ghost { background: transparent; border-color: var(--line); }
     button.small { padding: 6px 10px; font-size: 13px; }
+    select.small { width: auto; padding: 6px 8px; font-size: 13px; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
     .row > * { flex: 1 1 180px; }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -82,6 +83,16 @@
     .badge.off { color: var(--red); border-color: #6b1d2a; background: #241014; }
     .badge.exp { color: var(--amber); border-color: #6b551d; background: #241f10; }
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .presets button {
+      padding: 6px 10px; font-size: 13px;
+      background: #0a1020; border: 1px solid var(--line);
+    }
+    .presets button[aria-pressed="true"] {
+      border-color: var(--blue); color: var(--blue);
+      background: #10203c;
+    }
+    #expiryHint { display: block; margin-top: 6px; font-size: 13px; min-height: 18px; }
     .empty { padding: 28px; text-align: center; color: var(--muted); }
     #toast {
       position: fixed; right: 18px; bottom: 18px; max-width: 360px;
@@ -146,6 +157,14 @@
             <div>
               <label for="expires">Expiration (optionnel)</label>
               <input id="expires" type="datetime-local" />
+              <div class="presets" id="expiryPresets" role="group" aria-label="Durées rapides">
+                <button type="button" data-kind="2h">+ 2 heures</button>
+                <button type="button" data-kind="24h">+ 24 heures</button>
+                <button type="button" data-kind="12m">+ 12 mois</button>
+                <button type="button" data-kind="2200">Jusqu’à 2200</button>
+                <button type="button" data-kind="never">Illimité</button>
+              </div>
+              <span id="expiryHint" class="muted"></span>
             </div>
             <div>
               <label for="notes">Notes</label>
@@ -214,6 +233,74 @@
       const d = new Date(value);
       if (Number.isNaN(d.getTime())) return value;
       return d.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+    }
+
+    // Value for <input type="datetime-local"> in the admin's local time.
+    function toLocalInput(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+        `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function clearPresetSelection() {
+      for (const button of $("expiryPresets").querySelectorAll("button")) {
+        button.setAttribute("aria-pressed", "false");
+      }
+    }
+
+    function updateExpiryHint() {
+      const raw = $("expires").value;
+      const date = raw ? new Date(raw) : null;
+      if (!raw) {
+        $("expiryHint").textContent = "Aucune expiration : licence illimitée";
+      } else if (!date || Number.isNaN(date.getTime())) {
+        $("expiryHint").textContent = "Date invalide";
+      } else {
+        $("expiryHint").textContent = "Expire le " + fmtDate(date.toISOString());
+      }
+    }
+
+    // Absolute date for a preset. Durations are added to [baseMs] when it is
+    // still in the future, so "Prolonger de 2 h" extends an existing licence
+    // instead of shortening it.
+    function presetDate(kind, baseMs = 0) {
+      const base = new Date(Math.max(Date.now(), baseMs || 0));
+      if (kind === "2h") return new Date(base.getTime() + 2 * 60 * 60 * 1000);
+      if (kind === "24h") return new Date(base.getTime() + 24 * 60 * 60 * 1000);
+      if (kind === "12m") {
+        const d = new Date(base);
+        d.setMonth(d.getMonth() + 12);
+        return d;
+      }
+      if (kind === "2200") {
+        // End of 2200, in the admin's local time.
+        return new Date(2200, 11, 31, 23, 59, 0, 0);
+      }
+      return null;
+    }
+
+    function applyExpiryPreset(button) {
+      const kind = button.dataset.kind;
+      const date = presetDate(kind);
+      $("expires").value = date ? toLocalInput(date) : "";
+      clearPresetSelection();
+      if (date) button.setAttribute("aria-pressed", "true");
+      updateExpiryHint();
+    }
+
+    async function extendLicense(item, kind) {
+      const current = item.expires_at ? new Date(item.expires_at).getTime() : 0;
+      const date = presetDate(kind, current);
+      const { error } = await supabase
+        .from("licenses")
+        .update({
+          expires_at: date ? date.toISOString() : null,
+          is_active: true,
+        })
+        .eq("id", item.id);
+      if (error) return toast("Modification impossible : " + error.message, true);
+      toast(date ? "Expiration : " + fmtDate(date.toISOString()) : "Licence illimitée");
+      await load();
     }
 
     function isExpired(item) {
@@ -305,7 +392,30 @@
           }
         });
 
-        actions.append(toggle, copy, remove);
+        const extend = document.createElement("select");
+        extend.className = "small";
+        extend.title = "Changer la durée d’activation";
+        extend.setAttribute("aria-label", "Changer la durée d’activation");
+        for (const [value, label] of [
+          ["", "Durée…"],
+          ["2h", "+ 2 heures"],
+          ["24h", "+ 24 heures"],
+          ["12m", "+ 12 mois"],
+          ["2200", "Jusqu’à 2200"],
+          ["never", "Illimité"],
+        ]) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = label;
+          extend.appendChild(option);
+        }
+        extend.addEventListener("change", async () => {
+          const kind = extend.value;
+          extend.value = "";
+          if (kind) await extendLicense(item, kind);
+        });
+
+        actions.append(toggle, extend, copy, remove);
         tr.append(fp, st, exp, notes, actions);
         rows.appendChild(tr);
       }
@@ -362,6 +472,8 @@
       );
       if (error) return toast("Ajout impossible : " + error.message, true);
       $("addForm").reset();
+      clearPresetSelection();
+      updateExpiryHint();
       toast("Boîtier ajouté et activé");
       await load();
     }
@@ -402,6 +514,17 @@
     });
 
     $("addForm").addEventListener("submit", addLicense);
+    $("expiryPresets").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      event.preventDefault();
+      applyExpiryPreset(button);
+    });
+    $("expires").addEventListener("input", () => {
+      clearPresetSelection();
+      updateExpiryHint();
+    });
+    updateExpiryHint();
     $("refresh").addEventListener("click", load);
     $("search").addEventListener("input", render);
     $("filter").addEventListener("change", render);

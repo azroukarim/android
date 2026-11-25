@@ -93,6 +93,10 @@ https://azroukarim.github.io/android/
 - Renseignez `expires_at` pour une activation limitée dans le temps : l'écran
   Playlist du boîtier affiche alors les jours restants. Laissez la colonne vide
   pour une activation illimitée.
+- Durées rapides : sur le formulaire d'ajout comme dans la liste, choisissez
+  `+ 2 heures`, `+ 24 heures`, `+ 12 mois`, `Jusqu'à 2200` ou `Illimité`.
+  Les durées s'ajoutent à la date existante si elle est encore dans le futur,
+  donc « + 2 heures » prolonge un abonnement au lieu de le raccourcir.
 - La suppression est définitive.
 
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS
