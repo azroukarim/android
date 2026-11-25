@@ -87,8 +87,12 @@ https://azroukarim.github.io/android/
 ## 4. Utilisation
 
 - Connectez-vous avec l'email/mot de passe administrateur.
-- Ajoutez la MAC ou l'ANDROID_ID affiché par l'application.
+- Ajoutez la MAC ou l'ANDROID_ID affiché par l'application (le client peut
+  aussi envoyer le QR code WhatsApp affiché sur l'écran d'activation).
 - `Activer` / `Désactiver` contrôle l'accès du boîtier.
+- Renseignez `expires_at` pour une activation limitée dans le temps : l'écran
+  Playlist du boîtier affiche alors les jours restants. Laissez la colonne vide
+  pour une activation illimitée.
 - La suppression est définitive.
 
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS

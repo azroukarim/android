@@ -1,18 +1,18 @@
 {
-  "version": "5.3.75",
-  "notes": "Activation par boitier (Supabase), episodes Stalker/restream, barre de seek 30 s.",
+  "version": "5.3.76",
+  "notes": "Ecran d'activation aux couleurs de l'application avec QR WhatsApp, jours d'activation restants dans Playlist, verification de licence a chaque ouverture, episodes Stalker/restream, seek 30 s.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.75_arm64.apk",
-      "sha256": "f171f076eab3165f346abc0e4407aff6ed6280a517b8140b5f643fff59140b2d"
+      "name": "Streamplayer_v5.3.76_arm64.apk",
+      "sha256": "C735EB2BFF05D29D867252C44118A7703350AEC38D12FC2D8D5493D8620E06A4"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.75_arm32.apk",
-      "sha256": "791991022ecba3793d584ae04979288ab0b52676a7019f90691e3310efa8ea03"
+      "name": "Streamplayer_v5.3.76_arm32.apk",
+      "sha256": "E75FB4DA2AB6A6CA8E8AC19D32675DD321C0F3CB7946BF22A9897ACC90974006"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.75_x86_64.apk",
-      "sha256": "e7cdf36a1d263c6159f2e4ab2734901bc2815da682c9cc0487dbd5b2e5a29f7f"
+      "name": "Streamplayer_v5.3.76_x86_64.apk",
+      "sha256": "7834A1216AF473B3B1B79A53089C78F1B5D8F8CE5260C244172CA9742545224F"
     }
   }
 }
