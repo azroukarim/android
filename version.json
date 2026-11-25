@@ -1,18 +1,18 @@
 {
-  "version": "5.3.77",
-  "notes": "Ajout de playlist au boitier : DOWN depuis le dernier champ atteint Enregistrer, clavier masque sans perdre le focus, sauvegarde et rester sur la liste. Ecran d'activation aux couleurs de l'application avec QR WhatsApp, jours d'activation restants dans Playlist, verification de licence a chaque ouverture, episodes Stalker/restream, seek 30 s.",
+  "version": "5.3.80",
+  "notes": "Identifiant de boitier stable au format MAC, derive de l'ANDROID_ID : il ne change plus apres une mise a jour, un effacement de donnees ou une reinstallation, seulement apres une remise a zero du boitier. Verification de la date d'expiration avec l'heure du serveur. Durees courtes (2 h, 24 h) affichees en heures et minutes. Protection contre le recul de l'horloge et tolerance hors ligne ramenee a 3 jours. Panneau d'activation avec durees rapides : 2 h, 24 h, 12 mois, jusqu'a 2200 ou illimite.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.77_arm64.apk",
-      "sha256": "2FAE24EA48156D40FDA99A2BE7C92BBFD9847D756477CF341D61B34655E2762F"
+      "name": "Streamplayer_v5.3.80_arm64.apk",
+      "sha256": "A149CE0CEFC47E8D5EFEEFCE3F8131ABF49FD123610A850F06514E13B186A3CF"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.77_arm32.apk",
-      "sha256": "F862E32140FB0D6E2CAF51E687E2CE13522B7DC022CBD53E1A19567BD6EFE41C"
+      "name": "Streamplayer_v5.3.80_arm32.apk",
+      "sha256": "E9F66D749D3CFD937DD75AEA15EB5C1677F4FE7498378C454CF426F5268511D6"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.77_x86_64.apk",
-      "sha256": "652F7AD1F5A2D395332CCA6FA4F990078B2422925FCC7E4C18D262CD1661074A"
+      "name": "Streamplayer_v5.3.80_x86_64.apk",
+      "sha256": "34327496F0202D3916DC32A648A88F3237F97C6D5F4B88C2E245A07E5DF545C0"
     }
   }
 }

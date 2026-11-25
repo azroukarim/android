@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.77
+# Streamplayer — build 5.3.80
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.77_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.77_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.77_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.80_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.80_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.80_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -26,7 +26,9 @@ Les sommes sont aussi disponibles dans `SHA256SUMS`.
 **https://azroukarim.github.io/android/**
 
 Panneau statique connecté à Supabase (authentification administrateur + RLS).
-Voir `docs/README.md` pour l'installation et les policies SQL.
+Durées rapides disponibles : **2 heures**, **24 heures**, **12 mois**,
+**jusqu'à 2200** ou **illimité**. Voir `docs/README.md` pour l'installation et
+les policies SQL.
 
 ## Activation
 
@@ -35,7 +37,9 @@ Si le boîtier n'est pas autorisé, l'écran d'activation s'affiche aux couleurs
 l'application avec :
 
 - un **QR code WhatsApp** (`+212 670 965 351`) pour contacter le propriétaire ;
-- l'identifiant du boîtier (MAC si disponible, sinon `ANDROID_ID`).
+- l'identifiant du boîtier : **MAC dérivé stable** en premier (format
+  `AA:BB:CC:DD:EE:FF`), puis la vraie MAC Ethernet si le système l'expose,
+  puis l'`ANDROID_ID` en secours.
 
 L'administrateur ajoute cet identifiant dans Supabase (ou via le panneau) :
 
@@ -44,8 +48,23 @@ L'administrateur ajoute cet identifiant dans Supabase (ou via le panneau) :
 - `is_active` : `true`
 - `expires_at` (optionnel) : date d'expiration de l'activation
 
-L'écran **Playlist** affiche les jours d'activation restants
-(`Activation : 364 jours restants`, ou `illimitée` si `expires_at` est vide).
+L'écran **Playlist** affiche la durée restante
+(`Activation : 364 jours restants`, `Activation : 2 h restantes`, ou
+`illimitée` si `expires_at` est vide).
+
+## Nouveautés 5.3.80
+
+- **Identifiant stable au format MAC**, dérivé de l'`ANDROID_ID` : il survit aux
+  mises à jour, à l'effacement des données et aux réinstallations ; il ne change
+  qu'après une remise à zéro du boîtier.
+- **Expiration vérifiée avec l'heure du serveur** : un licenciement de 2 heures
+  s'arrête vraiment après 2 heures, même si le boîtier est hors ligne.
+- **Protection contre le recul de l'horloge** : un retour de plus de 6 heures
+  invalide le cache local.
+- Tolérance hors ligne ramenée de 7 à **3 jours**.
+- Durées courtes affichées en **heures et minutes**.
+- Panneau d'activation : durées rapides **2 h / 24 h / 12 mois / 2200 /
+  illimité**, aussi bien à l'ajout que sur chaque ligne existante.
 
 ## Nouveautés 5.3.77
 
