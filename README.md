@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.76
+# Streamplayer — build 5.3.77
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.76_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.76_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.76_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.76_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.76_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.76_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.77_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.77_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.77_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.77_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -46,6 +46,14 @@ L'administrateur ajoute cet identifiant dans Supabase (ou via le panneau) :
 
 L'écran **Playlist** affiche les jours d'activation restants
 (`Activation : 364 jours restants`, ou `illimitée` si `expires_at` est vide).
+
+## Nouveautés 5.3.77
+
+- Ajout de playlist à la télécommande : DOWN depuis le dernier champ atteint
+  **Enregistrer**, le clavier tactile se masque sans perdre le focus, OK
+  sauvegarde l'abonnement et reste sur la liste des playlists.
+- DOWN depuis un sélecteur de mode (M3U / Xtream / MAG) ouvre directement le
+  premier champ du formulaire.
 
 ## Nouveautés 5.3.76
 
