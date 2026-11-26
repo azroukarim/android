@@ -144,6 +144,12 @@ supplémentaire n'est demandé.
    Pour un serveur `Boîtier`, la commande est appliquée au prochain démarrage de
    l’application ou via **Compte → Recevoir une playlist** ; la ligne affiche
    alors « En attente du boîtier ».
+5. La **Device Key peut être changée** depuis cette page : le portail vérifie
+   l’ancienne clé, met à jour les serveurs et les commandes en attente, et le
+   boîtier adopte la nouvelle clé au prochain démarrage.
+6. Dans le panneau administrateur, un clic sur l’**Identifiant MAC** ouvre cette
+   page directement pour le boîtier concerné (la clé est récupérée depuis
+   Supabase ; si elle est inconnue, elle est demandée sur la page).
 
 Les fonctions `device_portal_*` vérifient la paire MAC + clé à chaque appel. Sans
 ces deux valeurs, ni la liste ni les identifiants ne sont accessibles. La fonction

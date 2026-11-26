@@ -76,7 +76,10 @@ Il voit tous les serveurs Xtream / M3U / MAG déjà configurés dans l’applica
 (badge **Boîtier**, remontés automatiquement) et ceux poussés depuis le panneau
 administrateur (badge **Panneau**). Il peut **modifier et supprimer tous les
 serveurs**, quelle que soit leur origine, en ajouter et renvoyer ceux du panneau.
-Les identifiants Xtream restent masqués jusqu'à un clic explicite. Voir
+La **Device Key peut aussi être changée** depuis cette page ; le boîtier adopte
+la nouvelle clé au prochain démarrage. Un clic sur l’**Identifiant MAC** dans le
+panneau administrateur ouvre directement la page du boîtier concerné. Les
+identifiants Xtream restent masqués jusqu'à un clic explicite. Voir
 `docs/README.md`, section 6.
 
 ### Identité dans le gestionnaire local

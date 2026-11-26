@@ -136,6 +136,22 @@
       </p>
     </div>
 
+    <section class="card" id="keyCard">
+      <h2>Changer la Device Key</h2>
+      <p class="hint" style="margin-top:6px">
+        La nouvelle clé remplace l'ancienne pour cette MAC. Le boîtier l'adopte
+        au prochain démarrage (ou via « Compte → Recevoir une playlist »). Les
+        serveurs et les commandes en attente sont transférés automatiquement.
+      </p>
+      <div class="row" style="grid-template-columns:minmax(220px,320px)">
+        <div>
+          <label for="newKey">Nouvelle clé (6 chiffres)</label>
+          <input id="newKey" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" autocomplete="off" />
+        </div>
+      </div>
+      <div class="actions"><button class="primary small" id="saveKey" type="button">Appliquer la nouvelle clé</button></div>
+    </section>
+
     <section class="card">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
         <h2 id="formTitle">Ajouter un serveur</h2>
@@ -481,7 +497,33 @@
     } catch (error) { msg("msg", "Suppression impossible : " + error.message); }
   }
 
+  async function changeKey() {
+    const next = $("newKey").value.trim();
+    if (!/^[0-9]{6}$/.test(next)) {
+      return msg("msg", "La nouvelle clé doit contenir exactement 6 chiffres.");
+    }
+    if (next === state.key) {
+      return msg("msg", "Cette clé est déjà celle du boîtier.");
+    }
+    msg("msg", "Changement de clé…");
+    try {
+      await rpc("device_portal_set_key", { p_new_key: next });
+      state.key = next;
+      $("key").value = next;
+      $("showKey").textContent = next;
+      $("newKey").value = "";
+      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
+        fp: state.fp, key: state.key,
+      }));
+      msg("msg", "Device Key mise à jour. Le boîtier l'adoptera au prochain démarrage.", true);
+      await refresh();
+    } catch (error) {
+      msg("msg", "Changement impossible : " + error.message);
+    }
+  }
+
   $("loginForm").addEventListener("submit", login);
+  $("saveKey").addEventListener("click", changeKey);
   $("logout").addEventListener("click", logout);
   $("clearForm").addEventListener("click", clearForm);
   $("refresh").addEventListener("click", refresh);
@@ -489,13 +531,24 @@
   $("serverForm").addEventListener("submit", save);
   syncFields();
 
+  const params = new URLSearchParams(location.search);
   const saved = sessionStorage.getItem("streamplayer_portal");
+  let session = null;
   if (saved) {
+    try { session = JSON.parse(saved); } catch (_) {}
+  }
+  // Le panneau administrateur ouvre cette page avec ?fp=MAC&key=CLÉ.
+  state.fp = normalizeFp(params.get("fp") || session?.fp || "");
+  state.key = normalizeKey(params.get("key") || session?.key || "");
+  $("fp").value = state.fp;
+  $("key").value = state.key;
+
+  if (state.fp && /^[0-9]{6}$/.test(state.key)) {
     try {
-      const session = JSON.parse(saved);
-      state.fp = session.fp;
-      state.key = session.key;
       const rows = await loadRows();
+      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
+        fp: state.fp, key: state.key,
+      }));
       $("loginCard").hidden = true;
       $("appView").hidden = false;
       $("showFp").textContent = state.fp;
@@ -505,7 +558,10 @@
         ? `${rows.length} serveur(s) trouvé(s) pour cette paire MAC / clé.`
         : "Aucun serveur enregistré pour cette paire MAC / clé.",
         rows.length > 0);
-    } catch (_) { logout(); }
+    } catch (_) {
+      logout();
+      msg("loginMsg", "Clé invalide ou expirée : saisissez la MAC et la clé affichées sur le boîtier.");
+    }
   }
 </script>
 </body>

@@ -550,7 +550,13 @@
         const fp = document.createElement("td");
         fp.className = "mono";
         fp.dataset.label = "Identifiant";
-        fp.textContent = item.device_fingerprint;
+        const fpLink = document.createElement("button");
+        fpLink.type = "button";
+        fpLink.className = "small ghost";
+        fpLink.textContent = item.device_fingerprint;
+        fpLink.title = "Voir les serveurs du boîtier et changer sa clé";
+        fpLink.addEventListener("click", () => openDevicePortal(item));
+        fp.appendChild(fpLink);
 
         const st = document.createElement("td");
         st.dataset.label = "Statut";
@@ -630,6 +636,29 @@
         tr.append(fp, st, act, exp, notes, actions);
         rows.appendChild(tr);
       }
+    }
+
+    async function openDevicePortal(item) {
+      const fp = item.device_fingerprint || "";
+      if (!fp) return;
+      let key = "";
+      try {
+        const { data } = await supabase.rpc("device_admin_key", {
+          p_fingerprint: fp,
+        });
+        key = data || "";
+      } catch (_) {}
+      if (!key) {
+        const pushed = remotes.find(
+          (r) => r.device_fingerprint === fp && r.device_key
+        );
+        key = pushed?.device_key || "";
+      }
+      const url = new URL("device.html", location.href);
+      url.searchParams.set("fp", fp);
+      if (key) url.searchParams.set("key", key);
+      window.open(url.toString(), "_blank", "noopener");
+      if (!key) toast("Clé inconnue : saisissez-la sur la page du boîtier", true);
     }
 
     async function load() {

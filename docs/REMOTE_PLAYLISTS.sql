@@ -93,6 +93,19 @@ drop function if exists public.device_portal_delete(uuid, text, text, text);
 drop function if exists public.device_portal_resend(uuid, text, text, text);
 drop table if exists public.device_secrets;
 
+-- Device Keys modifiables depuis le portail. La clé d'origine est conservée
+-- comme « previous_key » pour que le boîtier puisse encore récupérer la
+-- nouvelle clé avec son ancienne valeur au prochain démarrage.
+create table if not exists public.device_key_overrides (
+  device_fingerprint text primary key,
+  device_key text not null,
+  previous_key text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.device_key_overrides enable row level security;
+
 create or replace function public.device_portal_authorized(
   p_fingerprint text,
   p_key text
@@ -107,8 +120,22 @@ as $$
     where lower(device_fingerprint) = lower(trim(p_fingerprint))
       and device_key = trim(p_key)
   ) or exists (
-    select 1 from public.licenses
-    where lower(device_fingerprint) = lower(trim(p_fingerprint))
+    select 1 from public.device_key_overrides o
+    where lower(o.device_fingerprint) = lower(trim(p_fingerprint))
+      and trim(p_key) in (o.device_key, o.previous_key)
+      and exists (
+        select 1 from public.licenses l
+        where lower(l.device_fingerprint) = lower(trim(p_fingerprint))
+      )
+  ) or (
+    not exists (
+      select 1 from public.device_key_overrides o
+      where lower(o.device_fingerprint) = lower(trim(p_fingerprint))
+    )
+    and exists (
+      select 1 from public.licenses l
+      where lower(l.device_fingerprint) = lower(trim(p_fingerprint))
+    )
   );
 $$;
 
@@ -441,6 +468,14 @@ declare
   v_key text := trim(p_key);
   v_count integer;
 begin
+  -- The portal may have changed the key: always store reports under the
+  -- current one so device.html keeps showing the right pair.
+  select coalesce(
+    (select o.device_key from public.device_key_overrides o
+     where lower(o.device_fingerprint) = lower(v_fp)),
+    v_key
+  ) into v_key;
+
   if p_servers is null or jsonb_typeof(p_servers) <> 'array' then
     raise exception 'invalid servers payload';
   end if;
@@ -566,6 +601,134 @@ as $$
       )
   ) as rows;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Changement de Device Key depuis le panneau / le portail
+-- ---------------------------------------------------------------------------
+-- clé actuelle pour un boîtier (admin connecté). Sert à ouvrir device.html
+-- directement depuis l'identifiant MAC du panneau.
+create or replace function public.device_admin_key(
+  p_fingerprint text
+)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_key text;
+begin
+  if not public.is_admin() then
+    raise exception 'access denied';
+  end if;
+
+  select device_key into v_key
+  from public.device_key_overrides
+  where lower(device_fingerprint) = lower(trim(p_fingerprint));
+  if v_key is not null then return v_key; end if;
+
+  select device_key into v_key
+  from public.remote_playlists
+  where lower(device_fingerprint) = lower(trim(p_fingerprint))
+  order by created_at desc
+  limit 1;
+  if v_key is not null then return v_key; end if;
+
+  select device_key into v_key
+  from public.device_servers
+  where lower(device_fingerprint) = lower(trim(p_fingerprint))
+  order by updated_at desc
+  limit 1;
+  return coalesce(v_key, '');
+end;
+$$;
+
+-- Le portail vérifie l'ancienne clé (ou la clé d'origine mémorisée) avant
+-- d'enregistrer la nouvelle, puis met toutes les tables à la nouvelle paire.
+create or replace function public.device_portal_set_key(
+  p_fingerprint text,
+  p_key text,
+  p_new_key text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_fp text := upper(trim(p_fingerprint));
+  v_old text := trim(p_key);
+  v_new text := trim(p_new_key);
+  v_previous text;
+begin
+  if v_new !~ '^[0-9]{6}$' then
+    raise exception 'invalid device key';
+  end if;
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
+    raise exception 'access denied';
+  end if;
+
+  select device_key into v_previous
+  from public.device_key_overrides
+  where lower(device_fingerprint) = lower(v_fp);
+  v_previous := coalesce(v_previous, v_old);
+
+  insert into public.device_key_overrides
+    (device_fingerprint, device_key, previous_key, created_at, updated_at)
+  values (v_fp, v_new, v_previous, now(), now())
+  on conflict (device_fingerprint) do update
+    set device_key = excluded.device_key,
+        previous_key = excluded.previous_key,
+        updated_at = now();
+
+  update public.remote_playlists
+  set device_key = v_new
+  where lower(device_fingerprint) = lower(v_fp);
+
+  update public.device_servers
+  set device_key = v_new
+  where lower(device_fingerprint) = lower(v_fp);
+
+  update public.remote_commands
+  set device_key = v_new
+  where lower(device_fingerprint) = lower(v_fp);
+
+  return true;
+end;
+$$;
+
+-- Appelé par le boîtier au démarrage avec sa clé courante (ou l'ancienne clé
+-- mémorisée) ; renvoie la nouvelle clé à adopter, ou une chaîne vide.
+create or replace function public.device_key_fetch(
+  p_fingerprint text,
+  p_key text
+)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_key text;
+begin
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
+    return '';
+  end if;
+  select device_key into v_key
+  from public.device_key_overrides
+  where lower(device_fingerprint) = lower(trim(p_fingerprint));
+  return coalesce(v_key, '');
+end;
+$$;
+
+revoke all on function public.device_admin_key(text) from public;
+grant execute on function public.device_admin_key(text) to authenticated;
+
+revoke all on function public.device_portal_set_key(text, text, text) from public;
+grant execute on function public.device_portal_set_key(text, text, text) to anon, authenticated;
+
+revoke all on function public.device_key_fetch(text, text) from public;
+grant execute on function public.device_key_fetch(text, text) to anon, authenticated;
 
 revoke all on function public.device_report_servers(text, text, jsonb) from public;
 grant execute on function public.device_report_servers(text, text, jsonb) to anon, authenticated;
