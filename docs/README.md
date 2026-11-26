@@ -146,7 +146,9 @@ supplémentaire n'est demandé.
    alors « En attente du boîtier ».
 5. La **Device Key peut être changée** depuis cette page : le portail vérifie
    l’ancienne clé, met à jour les serveurs et les commandes en attente, et le
-   boîtier adopte la nouvelle clé au prochain démarrage.
+   boîtier adopte la nouvelle clé au prochain démarrage. Les téléphones qui
+   saisissent encore l’ancienne clé voient quand même les serveurs : la clé est
+   résolue automatiquement vers la clé courante.
 6. Dans le panneau administrateur, un clic sur l’**Identifiant MAC** ouvre cette
    page directement pour le boîtier concerné (la clé est récupérée depuis
    Supabase ; si elle est inconnue, elle est demandée sur la page).

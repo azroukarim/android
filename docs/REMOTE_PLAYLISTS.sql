@@ -139,6 +139,31 @@ as $$
   );
 $$;
 
+-- Clé réellement utilisée par les tables du portail. Quand la clé a été
+-- changée depuis device.html, l'ancienne clé reste acceptée pour l'accès mais
+-- les serveurs sont maintenant enregistrés sous la nouvelle : on résout donc
+-- toujours la clé courante avant toute lecture/écriture.
+create or replace function public.device_effective_key(
+  p_fingerprint text,
+  p_key text
+)
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select coalesce(
+    (
+      select o.device_key
+      from public.device_key_overrides o
+      where lower(o.device_fingerprint) = lower(trim(p_fingerprint))
+        and trim(p_key) in (o.device_key, o.previous_key)
+        and public.device_portal_authorized(p_fingerprint, p_key)
+    ),
+    trim(p_key)
+  );
+$$;
+
 create or replace function public.device_portal_login(
   p_fingerprint text,
   p_key text
@@ -163,7 +188,7 @@ as $$
   select r.*
   from public.remote_playlists r
   where lower(r.device_fingerprint) = lower(trim(p_fingerprint))
-    and r.device_key = trim(p_key)
+    and r.device_key = public.device_effective_key(p_fingerprint, p_key)
     and public.device_portal_authorized(p_fingerprint, p_key)
   order by r.created_at desc;
 $$;
@@ -186,6 +211,7 @@ set search_path = public
 as $$
 declare
   v_id uuid;
+  v_key text := public.device_effective_key(p_fingerprint, p_key);
 begin
   if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
@@ -198,7 +224,7 @@ begin
     insert into public.remote_playlists
       (device_fingerprint, device_key, type, name, url, username, password, mac, is_active)
     values
-      (upper(trim(p_fingerprint)), trim(p_key), p_type,
+      (upper(trim(p_fingerprint)), v_key, p_type,
        coalesce(p_name, ''), coalesce(p_url, ''), coalesce(p_username, ''),
        coalesce(p_password, ''), coalesce(p_mac, ''), true)
     returning id into v_id;
@@ -214,7 +240,7 @@ begin
         delivered_at = null
     where id = p_id
       and lower(device_fingerprint) = lower(trim(p_fingerprint))
-      and device_key = trim(p_key)
+      and device_key = v_key
     returning id into v_id;
   end if;
   return v_id;
@@ -231,6 +257,8 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_key text := public.device_effective_key(p_fingerprint, p_key);
 begin
   if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
@@ -238,7 +266,7 @@ begin
   delete from public.remote_playlists
   where id = p_id
     and lower(device_fingerprint) = lower(trim(p_fingerprint))
-    and device_key = trim(p_key);
+    and device_key = v_key;
 end;
 $$;
 
@@ -252,6 +280,8 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_key text := public.device_effective_key(p_fingerprint, p_key);
 begin
   if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
@@ -260,12 +290,15 @@ begin
   set delivered_at = null, is_active = true
   where id = p_id
     and lower(device_fingerprint) = lower(trim(p_fingerprint))
-    and device_key = trim(p_key);
+    and device_key = v_key;
 end;
 $$;
 
 revoke all on function public.device_portal_authorized(text, text) from public;
 grant execute on function public.device_portal_authorized(text, text) to anon, authenticated;
+
+revoke all on function public.device_effective_key(text, text) from public;
+grant execute on function public.device_effective_key(text, text) to anon, authenticated;
 
 revoke all on function public.device_portal_login(text, text) from public;
 grant execute on function public.device_portal_login(text, text) to anon, authenticated;
@@ -340,7 +373,7 @@ set search_path = public
 as $$
 declare
   v_fp text := upper(trim(p_fingerprint));
-  v_key text := trim(p_key);
+  v_key text := public.device_effective_key(p_fingerprint, p_key);
   v_id uuid;
 begin
   if not public.device_portal_authorized(p_fingerprint, p_key) then
@@ -526,6 +559,11 @@ language sql
 security definer
 set search_path = public
 as $$
+  with q as (
+    select lower(trim(p_fingerprint)) as fp,
+           public.device_effective_key(p_fingerprint, p_key) as key,
+           public.device_portal_authorized(p_fingerprint, p_key) as ok
+  )
   select coalesce(jsonb_agg(item order by item->>'created_at' desc), '[]'::jsonb)
   from (
     select jsonb_build_object(
@@ -542,10 +580,11 @@ as $$
       'created_at', r.created_at,
       'delivered_at', r.delivered_at
     ) as item
-    from public.remote_playlists r
-    where lower(r.device_fingerprint) = lower(trim(p_fingerprint))
-      and r.device_key = trim(p_key)
-      and public.device_portal_authorized(p_fingerprint, p_key)
+    from q
+    cross join public.remote_playlists r
+    where lower(r.device_fingerprint) = q.fp
+      and r.device_key = q.key
+      and q.ok
 
     union all
 
@@ -564,7 +603,8 @@ as $$
       'created_at', s.updated_at,
       'delivered_at', null
     ) as item
-    from public.device_servers s
+    from q
+    cross join public.device_servers s
     left join lateral (
       select c.action, c.type, c.name, c.url, c.username, c.password, c.mac
       from public.remote_commands c
@@ -576,9 +616,9 @@ as $$
       order by c.created_at desc
       limit 1
     ) as pending on true
-    where lower(s.device_fingerprint) = lower(trim(p_fingerprint))
-      and s.device_key = trim(p_key)
-      and public.device_portal_authorized(p_fingerprint, p_key)
+    where lower(s.device_fingerprint) = q.fp
+      and s.device_key = q.key
+      and q.ok
       and not exists (
         select 1
         from public.remote_commands d

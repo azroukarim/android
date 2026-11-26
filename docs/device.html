@@ -102,11 +102,11 @@
       <div class="row" style="grid-template-columns:1fr">
         <div>
           <label for="fp">MAC Address / identifiant du boîtier</label>
-          <input id="fp" class="mono" placeholder="9A:B7:04:9C:E4:0C" autocomplete="off" spellcheck="false" required />
+          <input id="fp" class="mono" placeholder="9A:B7:04:9C:E4:0C" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required />
         </div>
         <div>
           <label for="key">Device Key (6 chiffres)</label>
-          <input id="key" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" autocomplete="off" required />
+          <input id="key" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required />
         </div>
       </div>
       <div class="actions"><button class="primary" type="submit">Entrer</button></div>
@@ -146,7 +146,7 @@
       <div class="row" style="grid-template-columns:minmax(220px,320px)">
         <div>
           <label for="newKey">Nouvelle clé (6 chiffres)</label>
-          <input id="newKey" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" autocomplete="off" />
+          <input id="newKey" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
         </div>
       </div>
       <div class="actions"><button class="primary small" id="saveKey" type="button">Appliquer la nouvelle clé</button></div>
@@ -221,18 +221,37 @@
   </main>
 </div>
 
-<script type="module">
-  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+<script>
+  // Plain script (no modules, no CDN import, no top-level await) so older
+  // mobile browsers can still open the portal.
   const SUPABASE_URL = "https://xcuihzyekoplwxoblpxv.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Dop7THLCuE0lLliWEyY9vg_MllGTnZ-";
-  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
   const $ = (id) => document.getElementById(id);
   const state = { fp: "", key: "", rows: [] };
 
-  function normalizeFp(value) { return String(value || "").trim().toUpperCase(); }
-  function normalizeKey(value) { return String(value || "").trim(); }
+  function normalizeFp(value) {
+    // Mobile keyboards often add spaces or turn the first letter lowercase.
+    return String(value || "").replace(/\s+/g, "").replace(/-/g, ":").toUpperCase();
+  }
+  function normalizeKey(value) {
+    // Only six digits are meaningful, whatever the keyboard inserted.
+    return String(value || "").replace(/\D/g, "");
+  }
+  function getSession() {
+    try { return JSON.parse(sessionStorage.getItem("streamplayer_portal") || "null"); }
+    catch (_) { return null; }
+  }
+  function saveSession(fp, key) {
+    try {
+      sessionStorage.setItem("streamplayer_portal", JSON.stringify({ fp, key }));
+    } catch (_) {
+      // Private browsing may disable sessionStorage; URL parameters still work.
+    }
+  }
+  function clearSession() {
+    try { sessionStorage.removeItem("streamplayer_portal"); } catch (_) {}
+  }
   function msg(id, text, ok = false) {
     const el = $(id);
     el.textContent = text || "";
@@ -284,6 +303,21 @@
     throw new Error("Aucune fonction de lecture des serveurs n’est disponible sur Supabase.");
   }
 
+  // If the Device Key was changed from the portal while a phone still had the
+  // old one, silently adopt the current key for subsequent operations.
+  async function adoptCurrentKey() {
+    try {
+      const current = await rpc("device_key_fetch");
+      if (/^[0-9]{6}$/.test(current || "") && current !== state.key) {
+        state.key = current;
+        $("key").value = current;
+        $("showKey").textContent = current;
+        $("newKey").value = "";
+        saveSession(state.fp, state.key);
+      }
+    } catch (_) {}
+  }
+
   async function login(event) {
     event.preventDefault();
     msg("loginMsg", "Recherche des serveurs…");
@@ -295,9 +329,8 @@
     }
     try {
       const rows = await loadRows();
-      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
-        fp: state.fp, key: state.key,
-      }));
+      await adoptCurrentKey();
+      saveSession(state.fp, state.key);
       $("loginCard").hidden = true;
       $("appView").hidden = false;
       $("showFp").textContent = state.fp;
@@ -313,7 +346,7 @@
   }
 
   function logout() {
-    sessionStorage.removeItem("streamplayer_portal");
+    clearSession();
     state.fp = state.key = "";
     state.rows = [];
     $("appView").hidden = true;
@@ -331,7 +364,7 @@
 
   function credentials(row) {
     if (row.type === "xtream") {
-      return `${escapeHtml(row.username || "—")} / <span class="masked">${escapeHtml(row.password || "—")}</span>`;
+      return `${escapeHtml(row.username || "—")} / <span class="masked" data-secret>${escapeHtml(row.password || "—")}</span>`;
     }
     if (row.type === "stalker") return `MAC ${escapeHtml(row.mac || "—")}`;
     return "—";
@@ -359,16 +392,28 @@
       edit.onclick = () => fill(row);
       const reveal = document.createElement("button");
       reveal.className = "small ghost";
-      reveal.textContent = "Voir mot de passe";
+      reveal.textContent = "afficher";
+      const hide = document.createElement("button");
+      hide.className = "small ghost";
+      hide.textContent = "masquer";
+      hide.hidden = true;
       reveal.onclick = () => {
         const masked = tr.querySelector(".masked");
-        if (masked) masked.classList.toggle("masked");
+        if (masked) masked.classList.remove("masked");
+        reveal.hidden = true;
+        hide.hidden = false;
+      };
+      hide.onclick = () => {
+        const secret = tr.querySelector("[data-secret]");
+        if (secret) secret.classList.add("masked");
+        hide.hidden = true;
+        reveal.hidden = false;
       };
       const del = document.createElement("button");
       del.className = "small danger";
       del.textContent = "Supprimer";
       del.onclick = () => removeRow(row);
-      actions.append(edit, reveal, del);
+      actions.append(edit, reveal, hide, del);
       if (row.source !== "app") {
         const resend = document.createElement("button");
         resend.className = "small ghost";
@@ -498,7 +543,7 @@
   }
 
   async function changeKey() {
-    const next = $("newKey").value.trim();
+    const next = normalizeKey($("newKey").value);
     if (!/^[0-9]{6}$/.test(next)) {
       return msg("msg", "La nouvelle clé doit contenir exactement 6 chiffres.");
     }
@@ -512,9 +557,7 @@
       $("key").value = next;
       $("showKey").textContent = next;
       $("newKey").value = "";
-      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
-        fp: state.fp, key: state.key,
-      }));
+      saveSession(state.fp, state.key);
       msg("msg", "Device Key mise à jour. Le boîtier l'adoptera au prochain démarrage.", true);
       await refresh();
     } catch (error) {
@@ -531,38 +574,37 @@
   $("serverForm").addEventListener("submit", save);
   syncFields();
 
-  const params = new URLSearchParams(location.search);
-  const saved = sessionStorage.getItem("streamplayer_portal");
-  let session = null;
-  if (saved) {
-    try { session = JSON.parse(saved); } catch (_) {}
-  }
-  // Le panneau administrateur ouvre cette page avec ?fp=MAC&key=CLÉ.
-  state.fp = normalizeFp(params.get("fp") || session?.fp || "");
-  state.key = normalizeKey(params.get("key") || session?.key || "");
-  $("fp").value = state.fp;
-  $("key").value = state.key;
+  async function init() {
+    const params = new URLSearchParams(location.search);
+    const session = getSession();
+    // Le panneau administrateur ouvre cette page avec ?fp=MAC&key=CLÉ.
+    state.fp = normalizeFp(params.get("fp") || (session && session.fp) || "");
+    state.key = normalizeKey(params.get("key") || (session && session.key) || "");
+    $("fp").value = state.fp;
+    $("key").value = state.key;
 
-  if (state.fp && /^[0-9]{6}$/.test(state.key)) {
-    try {
-      const rows = await loadRows();
-      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
-        fp: state.fp, key: state.key,
-      }));
-      $("loginCard").hidden = true;
-      $("appView").hidden = false;
-      $("showFp").textContent = state.fp;
-      $("showKey").textContent = state.key;
-      render();
-      msg("msg", rows.length
-        ? `${rows.length} serveur(s) trouvé(s) pour cette paire MAC / clé.`
-        : "Aucun serveur enregistré pour cette paire MAC / clé.",
-        rows.length > 0);
-    } catch (_) {
-      logout();
-      msg("loginMsg", "Clé invalide ou expirée : saisissez la MAC et la clé affichées sur le boîtier.");
+    if (state.fp && /^[0-9]{6}$/.test(state.key)) {
+      try {
+        const rows = await loadRows();
+        await adoptCurrentKey();
+        saveSession(state.fp, state.key);
+        $("loginCard").hidden = true;
+        $("appView").hidden = false;
+        $("showFp").textContent = state.fp;
+        $("showKey").textContent = state.key;
+        render();
+        msg("msg", rows.length
+          ? `${rows.length} serveur(s) trouvé(s) pour cette paire MAC / clé.`
+          : "Aucun serveur enregistré pour cette paire MAC / clé.",
+          rows.length > 0);
+      } catch (_) {
+        logout();
+        msg("loginMsg", "Clé invalide ou expirée : saisissez la MAC et la clé affichées sur le boîtier.");
+      }
     }
   }
+
+  init();
 </script>
 </body>
 </html>
