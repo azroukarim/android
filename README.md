@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.84
+# Streamplayer — build 5.3.85
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.84_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.84_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.84_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.85_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.85_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.85_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.85_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.85_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.85_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -87,11 +87,13 @@ désormais, en haut de page, **l'adresse locale**, la **MAC Address** et la
 portail isolé. La même paire apparaît dans l'application, à côté du QR code,
 dans **Changer la liste → QR / gestion Web**.
 
-## Nouveautés 5.3.84
+## Nouveautés 5.3.85
 
-- **Portail isolé `device.html`** : accès par MAC + Device Key uniquement, avec
-  consultation, modification, ajout, renvoi et suppression des serveurs du
-  boîtier. Les identifiants Xtream restent masqués jusqu'à un clic explicite.
+- **Portail isolé `device.html`** : accès par MAC + Device Key uniquement. Il
+  affiche les serveurs déjà configurés dans l'application (« Boîtier ») et ceux
+  du panneau (« Panneau »), et permet de **modifier ou supprimer les uns comme
+  les autres**, d'en ajouter et de renvoyer ceux du panneau. Les identifiants
+  Xtream restent masqués jusqu'à un clic explicite.
 - **Identité dans le gestionnaire local** : la MAC et la Device Key sont
   affichées à côté de `http://192.168.0.95:8089`, et également à côté du QR code
   dans **Changer la liste**.

@@ -1,18 +1,18 @@
 {
-  "version": "5.3.84",
-  "notes": "Nouveau : le portail device.html affiche les serveurs Xtream / M3U / MAG déjà configurés dans l'application (remontée automatique au démarrage et après chaque modification), en plus de ceux poussés depuis le panneau administrateur. BADGE Boitier / Panneau. Portail accessible avec MAC + Device Key seulement, identifiants Xtream masques. Le gestionnaire local affiche l'adresse, la MAC et la Cle appareil. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur.",
+  "version": "5.3.85",
+  "notes": "Nouveau : le portail device.html permet de modifier et supprimer tous les serveurs, y compris ceux deja configures dans l'application (remontee automatique). Les changements du boitier sont appliques au demarrage ou via Compte - Recevoir une playlist. Portail accessible avec MAC + Device Key seulement, identifiants Xtream masques. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.84_arm64.apk",
-      "sha256": "CB02CF2C33E160CD3B5E21FB8592AD055EEF8F3D869981194D2A00ED547EBAC0"
+      "name": "Streamplayer_v5.3.85_arm64.apk",
+      "sha256": "5252703B1E3F2A104E92DD1C64A00309E3437C24ACD201A72A5A3C1BB57F173E"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.84_arm32.apk",
-      "sha256": "E05C0A3142070255ECBDD16F8EAE20C8CCAF06A6076C2DEEDADC29512E8018C5"
+      "name": "Streamplayer_v5.3.85_arm32.apk",
+      "sha256": "B9EE0B190EEA5EFAC96329C51D152E352ADB8E9BE5830A68E30B44B94E92C495"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.84_x86_64.apk",
-      "sha256": "AA4FD801F03252F52945E80FA464FB86A1815F2744EA73170F0B1DA51B0F6720"
+      "name": "Streamplayer_v5.3.85_x86_64.apk",
+      "sha256": "77FC6340C032198EB16B99A42335F533EEC998C956616C0C1102DEACB2166060"
     }
   }
 }
