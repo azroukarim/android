@@ -132,15 +132,21 @@ supplémentaire n'est demandé.
 
 1. Le client ouvre `device.html`, saisit la MAC et la clé à 6 chiffres affichées
    sur le boîtier (écran d'activation, « Compte » ou gestionnaire local).
-2. Il voit alors tous les serveurs Xtream / M3U / MAG associés à cette MAC.
-3. Il peut **modifier** un serveur (le mot de passe Xtream reste masqué jusqu'à
-   un clic sur « Voir mot de passe »), en **ajouter**, le **renvoyer** au boîtier
-   ou le **supprimer**.
+2. Il voit alors **tous les serveurs Xtream / M3U / MAG déjà configurés dans
+   l’application** (badge `Boîtier`) ainsi que ceux envoyés depuis le panneau
+   administrateur (badge `Panneau`). La remontée des serveurs locaux se fait au
+   démarrage de l’application et après chaque ajout, modification ou suppression.
+3. Il peut **modifier** un serveur du panneau (le mot de passe Xtream reste
+   masqué jusqu'à un clic sur « Voir mot de passe »), en **ajouter**, le
+   **renvoyer** au boîtier ou le **supprimer**. Les serveurs marqués `Boîtier`
+   se modifient depuis l’application elle-même.
 4. Toute modification remet le serveur en attente de livraison ; le boîtier le
    récupère au démarrage ou via **Compte → Recevoir une playlist**.
 
 Les fonctions `device_portal_*` vérifient la paire MAC + clé à chaque appel. Sans
-ces deux valeurs, ni la liste ni les identifiants ne sont accessibles.
+ces deux valeurs, ni la liste ni les identifiants ne sont accessibles. La fonction
+`device_report_servers` est appelée par l’application (avec la clé publishable)
+pour remplacer la liste des serveurs remontés par le boîtier.
 
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS
 > n'autorisent que les comptes présents dans `public.admins`. Ne mettez jamais

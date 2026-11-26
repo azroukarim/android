@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.83
+# Streamplayer — build 5.3.84
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.83_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.83_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.83_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.84_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.84_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.84_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.84_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -72,10 +72,11 @@ précis :
 **https://azroukarim.github.io/android/device.html**
 
 Le client y saisit uniquement **MAC + Device Key** (affichées sur le boîtier).
-Il voit alors tous les serveurs
-Xtream / M3U / MAG de son boîtier, peut les modifier, en ajouter, les renvoyer
-ou les supprimer. Les mots de passe Xtream restent masqués jusqu'à un clic
-explicite. Voir `docs/README.md`, section 6.
+Il voit tous les serveurs Xtream / M3U / MAG déjà configurés dans l’application
+(badge **Boîtier**, remontés automatiquement) et ceux poussés depuis le panneau
+administrateur (badge **Panneau**). Il peut modifier/supprimer les serveurs du
+panneau, en ajouter et les renvoyer. Les identifiants Xtream restent masqués
+jusqu'à un clic explicite. Voir `docs/README.md`, section 6.
 
 ### Identité dans le gestionnaire local
 
@@ -85,7 +86,7 @@ désormais, en haut de page, **l'adresse locale**, la **MAC Address** et la
 portail isolé. La même paire apparaît dans l'application, à côté du QR code,
 dans **Changer la liste → QR / gestion Web**.
 
-## Nouveautés 5.3.83
+## Nouveautés 5.3.84
 
 - **Portail isolé `device.html`** : accès par MAC + Device Key uniquement, avec
   consultation, modification, ajout, renvoi et suppression des serveurs du

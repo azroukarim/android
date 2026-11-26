@@ -127,9 +127,10 @@
         <button class="ghost small" id="logout" type="button">Quitter</button>
       </div>
       <p class="hint" style="margin-top:10px">
-        Modifiez un serveur existant ou ajoutez-en un nouveau. Toute modification
-        est renvoyée au boîtier à son prochain démarrage (ou via
-        « Compte → Recevoir une playlist »).
+        La liste contient les serveurs déjà configurés dans l’application
+        (<strong>Boîtier</strong>) et ceux envoyés depuis le panneau administrateur
+        (<strong>Panneau</strong>). Les serveurs du boîtier se mettent à jour au
+        démarrage de l’application et après chaque modification.
       </p>
     </div>
 
@@ -246,17 +247,21 @@
     return text ? JSON.parse(text) : null;
   }
 
+  function isMissingRpc(error) {
+    return /PGRST202|Could not find the function|no matches were found/i.test(error.message || "");
+  }
+
   async function loadRows() {
-    try {
-      state.rows = (await rpc("device_portal_list")) || [];
-    } catch (error) {
-      if (/PGRST202|Could not find the function|no matches were found/i.test(error.message)) {
-        state.rows = (await rpc("pull_remote_playlists")) || [];
-      } else {
-        throw error;
+    for (const name of ["device_portal_servers", "device_portal_list", "pull_remote_playlists"]) {
+      try {
+        const rows = await rpc(name);
+        state.rows = Array.isArray(rows) ? rows : [];
+        return state.rows;
+      } catch (error) {
+        if (!isMissingRpc(error)) throw error;
       }
     }
-    return state.rows;
+    throw new Error("Aucune fonction de lecture des serveurs n’est disponible sur Supabase.");
   }
 
   async function login(event) {
@@ -298,6 +303,7 @@
 
   function stateOf(row) {
     if (!row.is_active) return '<span class="badge off">Désactivée</span>';
+    if (row.source === "app") return '<span class="badge on">Sur le boîtier</span>';
     if (row.delivered_at) return '<span class="badge on">Livrée</span>';
     return '<span class="badge wait">En attente</span>';
   }
@@ -316,8 +322,9 @@
     $("empty").hidden = state.rows.length > 0;
     for (const row of state.rows) {
       const tr = document.createElement("tr");
+      const source = row.source === "app" ? "Boîtier" : "Panneau";
       tr.innerHTML = `
-        <td data-label="Type">${escapeHtml(String(row.type || "").toUpperCase())}</td>
+        <td data-label="Type">${escapeHtml(String(row.type || "").toUpperCase())}<br><span class="badge wait">${source}</span></td>
         <td data-label="Nom">${escapeHtml(row.name || "—")}</td>
         <td data-label="Serveur">${escapeHtml(row.url || "—")}</td>
         <td data-label="Identifiants">${credentials(row)}</td>
@@ -325,6 +332,11 @@
         <td data-label="Envoyé le">${row.created_at ? new Date(row.created_at).toLocaleString("fr-FR") : "—"}</td>
         <td data-label="Actions"></td>`;
       const actions = tr.lastElementChild;
+      if (row.source === "app") {
+        actions.textContent = "Modifiable depuis l’application";
+        body.appendChild(tr);
+        continue;
+      }
       const edit = document.createElement("button");
       edit.className = "small ghost";
       edit.textContent = "Modifier";

@@ -1,18 +1,18 @@
 {
-  "version": "5.3.83",
-  "notes": "Nouveau : portail isole device.html accessible avec MAC + Device Key seulement, avec ajout, modification, renvoi et suppression des serveurs Xtream / M3U / MAG du boitier (identifiants Xtream masques). Le gestionnaire local http://192.168.0.95:8089 et l'ecran Changer la liste affichent desormais la MAC et la Cle appareil a cote de l'adresse. Cle appareil a 6 chiffres derivee de l'ANDROID_ID. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur, durees courtes en heures/minutes, protection contre le recul d'horloge et tolerance hors ligne de 3 jours.",
+  "version": "5.3.84",
+  "notes": "Nouveau : le portail device.html affiche les serveurs Xtream / M3U / MAG déjà configurés dans l'application (remontée automatique au démarrage et après chaque modification), en plus de ceux poussés depuis le panneau administrateur. BADGE Boitier / Panneau. Portail accessible avec MAC + Device Key seulement, identifiants Xtream masques. Le gestionnaire local affiche l'adresse, la MAC et la Cle appareil. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.83_arm64.apk",
-      "sha256": "A9814E7802116DC5B5B61325AC7402D0C0E4FE4DC81C3C4DC313FD28728071A8"
+      "name": "Streamplayer_v5.3.84_arm64.apk",
+      "sha256": "CB02CF2C33E160CD3B5E21FB8592AD055EEF8F3D869981194D2A00ED547EBAC0"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.83_arm32.apk",
-      "sha256": "D5F5F24D5D7505EA9849118BEFBF2E6CF4544D7D2E001CFEA9E9EBB84C41C29C"
+      "name": "Streamplayer_v5.3.84_arm32.apk",
+      "sha256": "E05C0A3142070255ECBDD16F8EAE20C8CCAF06A6076C2DEEDADC29512E8018C5"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.83_x86_64.apk",
-      "sha256": "16E99CE0EBDBEA12DE0EB5788CA5106A548A624B7BD05FE6DB51E4F2D863169D"
+      "name": "Streamplayer_v5.3.84_x86_64.apk",
+      "sha256": "AA4FD801F03252F52945E80FA464FB86A1815F2744EA73170F0B1DA51B0F6720"
     }
   }
 }
