@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.89",
-    "notes":  "Interface En direct : plus d\u0027espace entre les bouquets et entre les chaines, en-tete plus fin. Valable pour Android TV, Google TV, telephones et WSA.",
+    "version":  "5.3.90",
+    "notes":  "Format d\u0027image : nouveau selecteur avec tous les ratios (4:3, 16:10, 3:2, 16:9, 18:9, 19.5:9, 20:9, 21:9, 2.35:1, 2.39:1), ZOOM 2.35:1, REDUIT et PLEIN pour remplir l\u0027ecran des telephones. Le choix s\u0027applique a toutes les chaines.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.89_arm64.apk",
-                                    "sha256":  "4427b0e2e1662a7815d5e27f80ac6660e3fa8dbfab19e86ff59e82cff6d2b4ac"
+                                    "name":  "Streamplayer_v5.3.90_arm64.apk",
+                                    "sha256":  "a0be00d4ac5b60d44e05923913f9c0cc21237855548805f0b88da631a743ec1c"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.89_arm32.apk",
-                                      "sha256":  "4498acf72405755cde67ab21fdcfcb4c6f9bf97aee5f4651177b1ef04716084a"
+                                      "name":  "Streamplayer_v5.3.90_arm32.apk",
+                                      "sha256":  "788739d0cb66196072f944739680a48ce077fef72d03dcf1ca1a4e32ed055878"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.89_x86_64.apk",
-                                 "sha256":  "c2941afb9e4a88ffb0d35682d2f58b7f367d9413a686bba673e086288f059029"
+                                 "name":  "Streamplayer_v5.3.90_x86_64.apk",
+                                 "sha256":  "442c93fc320ffeaa332dc61145d0ef89e0c1e51cd947612ebcc5373864ca44e7"
                              }
               }
 }
