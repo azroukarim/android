@@ -384,6 +384,17 @@ as $$
     where lower(s.device_fingerprint) = lower(trim(p_fingerprint))
       and s.device_key = trim(p_key)
       and public.device_portal_authorized(p_fingerprint, p_key)
+      and not exists (
+        select 1
+        from public.remote_playlists r2
+        where lower(r2.device_fingerprint) = lower(s.device_fingerprint)
+          and r2.device_key = s.device_key
+          and r2.type = s.type
+          and r2.url = s.url
+          and r2.username = s.username
+          and r2.password = s.password
+          and r2.mac = s.mac
+      )
   ) as rows;
 $$;
 
