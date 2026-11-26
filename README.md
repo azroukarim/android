@@ -71,8 +71,8 @@ précis :
 
 **https://azroukarim.github.io/android/device.html**
 
-Le client y saisit **MAC + Device Key + mot de passe d'accès** (défini par
-l'administrateur dans le panneau principal). Il voit alors tous les serveurs
+Le client y saisit uniquement **MAC + Device Key** (affichées sur le boîtier).
+Il voit alors tous les serveurs
 Xtream / M3U / MAG de son boîtier, peut les modifier, en ajouter, les renvoyer
 ou les supprimer. Les mots de passe Xtream restent masqués jusqu'à un clic
 explicite. Voir `docs/README.md`, section 6.
@@ -87,9 +87,9 @@ dans **Changer la liste → QR / gestion Web**.
 
 ## Nouveautés 5.3.83
 
-- **Portail isolé `device.html`** : accès par MAC + Device Key + mot de passe,
-  avec consultation, modification, ajout, renvoi et suppression des serveurs du
-  boîtier. Les secrets ne sont visibles qu'après déverrouillage.
+- **Portail isolé `device.html`** : accès par MAC + Device Key uniquement, avec
+  consultation, modification, ajout, renvoi et suppression des serveurs du
+  boîtier. Les identifiants Xtream restent masqués jusqu'à un clic explicite.
 - **Identité dans le gestionnaire local** : la MAC et la Device Key sont
   affichées à côté de `http://192.168.0.95:8089`, et également à côté du QR code
   dans **Changer la liste**.

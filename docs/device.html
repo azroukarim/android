@@ -95,8 +95,8 @@
     <h1>Accès au boîtier</h1>
     <p class="hint">
       Saisissez la <strong>MAC Address</strong> et la <strong>Device Key</strong>
-      affichées sur le boîtier (écran d’activation ou « Compte »), ainsi que le
-      mot de passe d’accès défini par l’administrateur.
+      affichées sur le boîtier (écran d’activation ou « Compte »). Aucun mot de
+      passe supplémentaire n’est nécessaire.
     </p>
     <form id="loginForm">
       <div class="row" style="grid-template-columns:1fr">
@@ -107,10 +107,6 @@
         <div>
           <label for="key">Device Key (6 chiffres)</label>
           <input id="key" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" autocomplete="off" required />
-        </div>
-        <div>
-          <label for="password">Mot de passe d’accès</label>
-          <input id="password" type="password" autocomplete="current-password" required />
         </div>
       </div>
       <div class="actions"><button class="primary" type="submit">Entrer</button></div>
@@ -212,7 +208,7 @@
   const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
   const $ = (id) => document.getElementById(id);
-  const state = { fp: "", key: "", password: "", hash: "", rows: [] };
+  const state = { fp: "", key: "", rows: [] };
 
   function normalizeFp(value) { return String(value || "").trim().toUpperCase(); }
   function normalizeKey(value) { return String(value || "").trim(); }
@@ -226,18 +222,10 @@
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   }
 
-  async function computeHash() {
-    const raw = normalizeFp(state.fp) + "|" + normalizeKey(state.key) + "|" + state.password;
-    const bytes = new TextEncoder().encode(raw);
-    const digest = await crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
-  }
-
   async function rpc(name, extra = {}) {
     const body = {
       p_fingerprint: normalizeFp(state.fp),
       p_key: normalizeKey(state.key),
-      p_hash: state.hash,
       ...extra,
     };
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
@@ -263,21 +251,18 @@
     msg("loginMsg", "Vérification…");
     state.fp = normalizeFp($("fp").value);
     state.key = normalizeKey($("key").value);
-    state.password = $("password").value;
-    if (!state.fp || !/^[0-9]{6}$/.test(state.key) || !state.password) {
-      msg("loginMsg", "MAC, clé à 6 chiffres et mot de passe sont obligatoires.");
+    if (!state.fp || !/^[0-9]{6}$/.test(state.key)) {
+      msg("loginMsg", "La MAC et la clé à 6 chiffres sont obligatoires.");
       return;
     }
     try {
-      state.hash = await computeHash();
       const ok = await rpc("device_portal_login");
       if (ok !== true) {
-        state.hash = "";
-        msg("loginMsg", "Accès refusé : valeurs incorrectes ou aucun mot de passe défini par l’administrateur.");
+        msg("loginMsg", "Accès refusé : cette paire MAC / clé n’est pas reconnue.");
         return;
       }
       sessionStorage.setItem("streamplayer_portal", JSON.stringify({
-        fp: state.fp, key: state.key, hash: state.hash,
+        fp: state.fp, key: state.key,
       }));
       $("loginCard").hidden = true;
       $("appView").hidden = false;
@@ -285,15 +270,13 @@
       $("showKey").textContent = state.key;
       await refresh();
     } catch (error) {
-      state.hash = "";
       msg("loginMsg", "Connexion impossible : " + error.message);
     }
   }
 
   function logout() {
     sessionStorage.removeItem("streamplayer_portal");
-    state.fp = state.key = state.password = state.hash = "";
-    $("password").value = "";
+    state.fp = state.key = "";
     state.rows = [];
     $("appView").hidden = true;
     $("loginCard").hidden = false;
@@ -456,7 +439,6 @@
       const session = JSON.parse(saved);
       state.fp = session.fp;
       state.key = session.key;
-      state.hash = session.hash;
       const ok = await rpc("device_portal_login");
       if (ok === true) {
         $("loginCard").hidden = true;

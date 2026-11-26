@@ -127,21 +127,20 @@ via les fonctions `pull_remote_playlists` et `ack_remote_playlist`.
 URL : **https://azroukarim.github.io/android/device.html**
 
 Page autonome pour le client : elle n'affiche aucun serveur tant que l'utilisateur
-n'a pas saisi **MAC + Device Key + mot de passe d'accès**.
+n'a pas saisi la **MAC** et la **Device Key** du boîtier. Aucun mot de passe
+supplémentaire n'est demandé.
 
-1. Dans le panneau administrateur, section **Portail isolé du boîtier**,
-   enregistrez un mot de passe pour la MAC du boîtier. Il est stocké uniquement
-   sous forme de hash SHA-256 (`MAC|DEVICE_KEY|mot de passe`).
-2. Le client ouvre `device.html`, saisit les trois valeurs, puis voit tous les
-   serveurs Xtream / M3U / MAG associés à cette MAC.
+1. Le client ouvre `device.html`, saisit la MAC et la clé à 6 chiffres affichées
+   sur le boîtier (écran d'activation, « Compte » ou gestionnaire local).
+2. Il voit alors tous les serveurs Xtream / M3U / MAG associés à cette MAC.
 3. Il peut **modifier** un serveur (le mot de passe Xtream reste masqué jusqu'à
    un clic sur « Voir mot de passe »), en **ajouter**, le **renvoyer** au boîtier
    ou le **supprimer**.
 4. Toute modification remet le serveur en attente de livraison ; le boîtier le
    récupère au démarrage ou via **Compte → Recevoir une playlist**.
 
-Les fonctions `device_portal_*` vérifient le hash à chaque appel. Sans le mot de
-passe, ni la liste ni les identifiants ne sont accessibles.
+Les fonctions `device_portal_*` vérifient la paire MAC + clé à chaque appel. Sans
+ces deux valeurs, ni la liste ni les identifiants ne sont accessibles.
 
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS
 > n'autorisent que les comptes présents dans `public.admins`. Ne mettez jamais

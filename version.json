@@ -1,6 +1,6 @@
 {
   "version": "5.3.83",
-  "notes": "Nouveau : portail isole device.html protege par MAC + Device Key + mot de passe, avec ajout, modification, renvoi et suppression des serveurs Xtream / M3U / MAG du boitier (mots de passe masques). Le gestionnaire local http://192.168.0.95:8089 et l'ecran Changer la liste affichent desormais la MAC et la Cle appareil a cote de l'adresse. Cle appareil a 6 chiffres derivee de l'ANDROID_ID. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur, durees courtes en heures/minutes, protection contre le recul d'horloge et tolerance hors ligne de 3 jours.",
+  "notes": "Nouveau : portail isole device.html accessible avec MAC + Device Key seulement, avec ajout, modification, renvoi et suppression des serveurs Xtream / M3U / MAG du boitier (identifiants Xtream masques). Le gestionnaire local http://192.168.0.95:8089 et l'ecran Changer la liste affichent desormais la MAC et la Cle appareil a cote de l'adresse. Cle appareil a 6 chiffres derivee de l'ANDROID_ID. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur, durees courtes en heures/minutes, protection contre le recul d'horloge et tolerance hors ligne de 3 jours.",
   "files": {
     "arm64-v8a": {
       "name": "Streamplayer_v5.3.83_arm64.apk",

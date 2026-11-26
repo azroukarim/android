@@ -80,61 +80,12 @@ grant execute on function public.ack_remote_playlist(uuid, text, text) to anon, 
 -- ---------------------------------------------------------------------------
 -- Portail isolé du boîtier (device.html)
 -- ---------------------------------------------------------------------------
--- Le mot de passe n'est jamais stocké en clair : le navigateur envoie
--- SHA256("MAC|DEVICE_KEY|mot de passe"). L'administrateur définit ce hash
--- depuis le panneau principal ; le portail doit le représenter à chaque appel.
+-- L'accès est conditionné uniquement à la paire MAC + Device Key fournie par
+-- l'application. Aucun mot de passe supplémentaire n'est demandé.
 
-create table if not exists public.device_secrets (
-  device_fingerprint text primary key,
-  device_key text not null,
-  password_hash text not null,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.device_secrets enable row level security;
-
-drop policy if exists "admins manage device secrets" on public.device_secrets;
-create policy "admins manage device secrets"
-  on public.device_secrets
-  for all
-  to authenticated
-  using (public.is_admin())
-  with check (public.is_admin());
-
-create or replace function public.device_portal_set_password(
+create or replace function public.device_portal_authorized(
   p_fingerprint text,
-  p_key text,
-  p_hash text
-)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if not public.is_admin() then
-    raise exception 'admin only';
-  end if;
-  if trim(coalesce(p_fingerprint, '')) = ''
-     or trim(coalesce(p_key, '')) = ''
-     or trim(coalesce(p_hash, '')) = '' then
-    raise exception 'missing values';
-  end if;
-  insert into public.device_secrets as s
-    (device_fingerprint, device_key, password_hash, updated_at)
-  values
-    (upper(trim(p_fingerprint)), trim(p_key), lower(trim(p_hash)), now())
-  on conflict (device_fingerprint) do update
-    set device_key = excluded.device_key,
-        password_hash = excluded.password_hash,
-        updated_at = now();
-end;
-$$;
-
-create or replace function public.device_portal_login(
-  p_fingerprint text,
-  p_key text,
-  p_hash text
+  p_key text
 )
 returns boolean
 language sql
@@ -142,18 +93,30 @@ security definer
 set search_path = public
 as $$
   select exists (
-    select 1
-    from public.device_secrets
-    where device_fingerprint = upper(trim(p_fingerprint))
+    select 1 from public.remote_playlists
+    where lower(device_fingerprint) = lower(trim(p_fingerprint))
       and device_key = trim(p_key)
-      and password_hash = lower(trim(p_hash))
+  ) or exists (
+    select 1 from public.licenses
+    where lower(device_fingerprint) = lower(trim(p_fingerprint))
   );
+$$;
+
+create or replace function public.device_portal_login(
+  p_fingerprint text,
+  p_key text
+)
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select public.device_portal_authorized(p_fingerprint, p_key);
 $$;
 
 create or replace function public.device_portal_list(
   p_fingerprint text,
-  p_key text,
-  p_hash text
+  p_key text
 )
 returns setof public.remote_playlists
 language sql
@@ -164,13 +127,7 @@ as $$
   from public.remote_playlists r
   where lower(r.device_fingerprint) = lower(trim(p_fingerprint))
     and r.device_key = trim(p_key)
-    and exists (
-      select 1
-      from public.device_secrets s
-      where s.device_fingerprint = upper(trim(p_fingerprint))
-        and s.device_key = trim(p_key)
-        and s.password_hash = lower(trim(p_hash))
-    )
+    and public.device_portal_authorized(p_fingerprint, p_key)
   order by r.created_at desc;
 $$;
 
@@ -178,7 +135,6 @@ create or replace function public.device_portal_save(
   p_id uuid,
   p_fingerprint text,
   p_key text,
-  p_hash text,
   p_type text,
   p_name text,
   p_url text,
@@ -193,15 +149,8 @@ set search_path = public
 as $$
 declare
   v_id uuid;
-  v_ok boolean;
 begin
-  select exists (
-    select 1 from public.device_secrets
-    where device_fingerprint = upper(trim(p_fingerprint))
-      and device_key = trim(p_key)
-      and password_hash = lower(trim(p_hash))
-  ) into v_ok;
-  if not v_ok then
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
   end if;
   if p_type not in ('xtream', 'm3u', 'stalker') then
@@ -238,8 +187,7 @@ $$;
 create or replace function public.device_portal_delete(
   p_id uuid,
   p_fingerprint text,
-  p_key text,
-  p_hash text
+  p_key text
 )
 returns void
 language plpgsql
@@ -247,12 +195,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if not exists (
-    select 1 from public.device_secrets
-    where device_fingerprint = upper(trim(p_fingerprint))
-      and device_key = trim(p_key)
-      and password_hash = lower(trim(p_hash))
-  ) then
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
   end if;
   delete from public.remote_playlists
@@ -265,8 +208,7 @@ $$;
 create or replace function public.device_portal_resend(
   p_id uuid,
   p_fingerprint text,
-  p_key text,
-  p_hash text
+  p_key text
 )
 returns void
 language plpgsql
@@ -274,12 +216,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if not exists (
-    select 1 from public.device_secrets
-    where device_fingerprint = upper(trim(p_fingerprint))
-      and device_key = trim(p_key)
-      and password_hash = lower(trim(p_hash))
-  ) then
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
     raise exception 'access denied';
   end if;
   update public.remote_playlists
@@ -290,20 +227,20 @@ begin
 end;
 $$;
 
-revoke all on function public.device_portal_set_password(text, text, text) from public;
-grant execute on function public.device_portal_set_password(text, text, text) to authenticated;
+revoke all on function public.device_portal_authorized(text, text) from public;
+grant execute on function public.device_portal_authorized(text, text) to anon, authenticated;
 
-revoke all on function public.device_portal_login(text, text, text) from public;
-grant execute on function public.device_portal_login(text, text, text) to anon, authenticated;
+revoke all on function public.device_portal_login(text, text) from public;
+grant execute on function public.device_portal_login(text, text) to anon, authenticated;
 
-revoke all on function public.device_portal_list(text, text, text) from public;
-grant execute on function public.device_portal_list(text, text, text) to anon, authenticated;
+revoke all on function public.device_portal_list(text, text) from public;
+grant execute on function public.device_portal_list(text, text) to anon, authenticated;
 
-revoke all on function public.device_portal_save(uuid, text, text, text, text, text, text, text, text, text) from public;
-grant execute on function public.device_portal_save(uuid, text, text, text, text, text, text, text, text, text) to anon, authenticated;
+revoke all on function public.device_portal_save(uuid, text, text, text, text, text, text, text, text) from public;
+grant execute on function public.device_portal_save(uuid, text, text, text, text, text, text, text, text) to anon, authenticated;
 
-revoke all on function public.device_portal_delete(uuid, text, text, text) from public;
-grant execute on function public.device_portal_delete(uuid, text, text, text) to anon, authenticated;
+revoke all on function public.device_portal_delete(uuid, text, text) from public;
+grant execute on function public.device_portal_delete(uuid, text, text) to anon, authenticated;
 
-revoke all on function public.device_portal_resend(uuid, text, text, text) from public;
-grant execute on function public.device_portal_resend(uuid, text, text, text) to anon, authenticated;
+revoke all on function public.device_portal_resend(uuid, text, text) from public;
+grant execute on function public.device_portal_resend(uuid, text, text) to anon, authenticated;
