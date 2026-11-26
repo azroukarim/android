@@ -1,18 +1,18 @@
 {
-  "version": "5.3.85",
-  "notes": "Nouveau : le portail device.html permet de modifier et supprimer tous les serveurs, y compris ceux deja configures dans l'application (remontee automatique). Les changements du boitier sont appliques au demarrage ou via Compte - Recevoir une playlist. Portail accessible avec MAC + Device Key seulement, identifiants Xtream masques. Identifiant MAC stable qui ne change qu'apres formatage. Expiration verifiee avec l'heure du serveur.",
+  "version": "5.3.87",
+  "notes": "Portail: un clic sur l'identifiant MAC du panneau ouvre la page du boitier avec ses serveurs, et la Device Key peut etre changee depuis cette page puis adoptée par l'application. Tous les serveurs (Boitier et Panneau) restent modifiables et supprimables. Interface playlist: QR plus petit, message Streamplayer, 3x3 cartes visibles et defilement par ligne.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.85_arm64.apk",
-      "sha256": "5252703B1E3F2A104E92DD1C64A00309E3437C24ACD201A72A5A3C1BB57F173E"
+      "name": "Streamplayer_v5.3.87_arm64.apk",
+      "sha256": "C0F07ABBA32F01179F12935BAD8DB459E4455D114960BDD16D2A166D1A43B5D9"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.85_arm32.apk",
-      "sha256": "B9EE0B190EEA5EFAC96329C51D152E352ADB8E9BE5830A68E30B44B94E92C495"
+      "name": "Streamplayer_v5.3.87_arm32.apk",
+      "sha256": "BF3A6E85255704C8F658EFC0BBB82BE2445AFDC48D5E3BEBE688F272E6972CC6"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.85_x86_64.apk",
-      "sha256": "77FC6340C032198EB16B99A42335F533EEC998C956616C0C1102DEACB2166060"
+      "name": "Streamplayer_v5.3.87_x86_64.apk",
+      "sha256": "4521344FEB46025EEE2076C9FBBCDDEE467A20FD9264E3DB1EA37EC3EA2A0A8D0"
     }
   }
 }
