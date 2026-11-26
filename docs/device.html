@@ -129,8 +129,10 @@
       <p class="hint" style="margin-top:10px">
         La liste contient les serveurs déjà configurés dans l’application
         (<strong>Boîtier</strong>) et ceux envoyés depuis le panneau administrateur
-        (<strong>Panneau</strong>). Les serveurs du boîtier se mettent à jour au
-        démarrage de l’application et après chaque modification.
+        (<strong>Panneau</strong>). Tous peuvent être <strong>modifiés</strong> et
+        <strong>supprimés</strong>. Pour un serveur du boîtier, la modification
+        est appliquée au prochain démarrage de l’application (ou via
+        « Compte → Recevoir une playlist »).
       </p>
     </div>
 
@@ -141,6 +143,8 @@
       </div>
       <form id="serverForm" style="margin-top:10px">
         <input type="hidden" id="sid" />
+        <input type="hidden" id="slocal" />
+        <input type="hidden" id="ssource" />
         <div class="row">
           <div>
             <label for="type">Type</label>
@@ -303,6 +307,7 @@
 
   function stateOf(row) {
     if (!row.is_active) return '<span class="badge off">Désactivée</span>';
+    if (row.pending) return '<span class="badge wait">En attente du boîtier</span>';
     if (row.source === "app") return '<span class="badge on">Sur le boîtier</span>';
     if (row.delivered_at) return '<span class="badge on">Livrée</span>';
     return '<span class="badge wait">En attente</span>';
@@ -332,11 +337,6 @@
         <td data-label="Envoyé le">${row.created_at ? new Date(row.created_at).toLocaleString("fr-FR") : "—"}</td>
         <td data-label="Actions"></td>`;
       const actions = tr.lastElementChild;
-      if (row.source === "app") {
-        actions.textContent = "Modifiable depuis l’application";
-        body.appendChild(tr);
-        continue;
-      }
       const edit = document.createElement("button");
       edit.className = "small ghost";
       edit.textContent = "Modifier";
@@ -348,15 +348,18 @@
         const masked = tr.querySelector(".masked");
         if (masked) masked.classList.toggle("masked");
       };
-      const resend = document.createElement("button");
-      resend.className = "small ghost";
-      resend.textContent = "Renvoyer";
-      resend.onclick = () => resendRow(row.id);
       const del = document.createElement("button");
       del.className = "small danger";
       del.textContent = "Supprimer";
-      del.onclick = () => removeRow(row.id);
-      actions.append(edit, reveal, resend, del);
+      del.onclick = () => removeRow(row);
+      actions.append(edit, reveal, del);
+      if (row.source !== "app") {
+        const resend = document.createElement("button");
+        resend.className = "small ghost";
+        resend.textContent = "Renvoyer";
+        resend.onclick = () => resendRow(row.id);
+        actions.append(resend);
+      }
       body.appendChild(tr);
     }
   }
@@ -381,22 +384,31 @@
   }
 
   function fill(row) {
-    $("sid").value = row.id || "";
-    $("type").value = row.type === "stalker" ? "stalker" : row.type;
+    const fromApp = row.source === "app";
+    $("sid").value = fromApp ? "" : row.id || "";
+    $("slocal").value = fromApp ? row.local_id || "" : "";
+    $("ssource").value = fromApp ? "app" : "admin";
+    $("type").value = ["xtream", "m3u", "stalker"].includes(row.type) ? row.type : "m3u";
     $("name").value = row.name || "";
     $("url").value = row.url || "";
     $("username").value = row.username || "";
     $("serverPassword").value = row.password || "";
     $("mac").value = row.mac || "";
-    $("formTitle").textContent = "Modifier le serveur";
+    $("formTitle").textContent = fromApp
+      ? "Modifier le serveur du boîtier"
+      : "Modifier le serveur";
     syncFields();
-    msg("msg", "");
+    msg("msg", fromApp
+      ? "La modification sera appliquée au prochain démarrage du boîtier (ou via « Compte → Recevoir une playlist »)."
+      : "");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function clearForm() {
     $("serverForm").reset();
     $("sid").value = "";
+    $("slocal").value = "";
+    $("ssource").value = "";
     $("formTitle").textContent = "Ajouter un serveur";
     syncFields();
     msg("msg", "");
@@ -413,19 +425,30 @@
     if (type === "stalker" && !$("mac").value.trim()) {
       return msg("msg", "La MAC MAG est obligatoire.");
     }
+    const fields = {
+      p_type: type,
+      p_name: $("name").value.trim(),
+      p_url: url,
+      p_username: type === "xtream" ? $("username").value.trim() : "",
+      p_password: type === "xtream" ? $("serverPassword").value : "",
+      p_mac: type === "stalker" ? $("mac").value.trim() : "",
+    };
     msg("msg", "Enregistrement…");
     try {
-      let id = $("sid").value || null;
-      id = await rpc("device_portal_save", {
-        p_id: id,
-        p_type: type,
-        p_name: $("name").value.trim(),
-        p_url: url,
-        p_username: type === "xtream" ? $("username").value.trim() : "",
-        p_password: type === "xtream" ? $("serverPassword").value : "",
-        p_mac: type === "stalker" ? $("mac").value.trim() : "",
-      });
-      msg("msg", "Serveur enregistré et programmé pour le boîtier.", true);
+      if ($("ssource").value === "app") {
+        await rpc("device_portal_queue_command", {
+          p_action: "update_server",
+          p_local_id: $("slocal").value,
+          ...fields,
+        });
+        msg("msg", "Modification envoyée au boîtier. Elle apparaîtra après son prochain démarrage (ou « Recevoir une playlist »).", true);
+      } else {
+        await rpc("device_portal_save", {
+          p_id: $("sid").value || null,
+          ...fields,
+        });
+        msg("msg", "Serveur enregistré et programmé pour le boîtier.", true);
+      }
       clearForm();
       await refresh();
     } catch (error) {
@@ -441,11 +464,19 @@
     } catch (error) { msg("msg", "Renvoi impossible : " + error.message); }
   }
 
-  async function removeRow(id) {
+  async function removeRow(row) {
     if (!confirm("Supprimer ce serveur du boîtier ?")) return;
     try {
-      await rpc("device_portal_delete", { p_id: id });
-      msg("msg", "Serveur supprimé.", true);
+      if (row.source === "app") {
+        await rpc("device_portal_queue_command", {
+          p_action: "delete_server",
+          p_local_id: row.local_id,
+        });
+        msg("msg", "Suppression envoyée au boîtier. Le serveur disparaîtra après son prochain démarrage (ou « Recevoir une playlist »).", true);
+      } else {
+        await rpc("device_portal_delete", { p_id: row.id });
+        msg("msg", "Serveur supprimé.", true);
+      }
       await refresh();
     } catch (error) { msg("msg", "Suppression impossible : " + error.message); }
   }

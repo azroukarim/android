@@ -136,12 +136,14 @@ supplémentaire n'est demandé.
    l’application** (badge `Boîtier`) ainsi que ceux envoyés depuis le panneau
    administrateur (badge `Panneau`). La remontée des serveurs locaux se fait au
    démarrage de l’application et après chaque ajout, modification ou suppression.
-3. Il peut **modifier** un serveur du panneau (le mot de passe Xtream reste
-   masqué jusqu'à un clic sur « Voir mot de passe »), en **ajouter**, le
-   **renvoyer** au boîtier ou le **supprimer**. Les serveurs marqués `Boîtier`
-   se modifient depuis l’application elle-même.
-4. Toute modification remet le serveur en attente de livraison ; le boîtier le
-   récupère au démarrage ou via **Compte → Recevoir une playlist**.
+3. Il peut **modifier** et **supprimer n’importe quel serveur**, qu’il vienne du
+   panneau ou du boîtier. Le mot de passe Xtream reste masqué jusqu’à un clic sur
+   « Voir mot de passe ». Il peut aussi ajouter un serveur et renvoyer ceux du
+   panneau.
+4. Pour un serveur `Panneau`, la modification le remet en attente de livraison.
+   Pour un serveur `Boîtier`, la commande est appliquée au prochain démarrage de
+   l’application ou via **Compte → Recevoir une playlist** ; la ligne affiche
+   alors « En attente du boîtier ».
 
 Les fonctions `device_portal_*` vérifient la paire MAC + clé à chaque appel. Sans
 ces deux valeurs, ni la liste ni les identifiants ne sont accessibles. La fonction

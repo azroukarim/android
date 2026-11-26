@@ -256,6 +256,154 @@ revoke all on function public.device_portal_resend(uuid, text, text) from public
 grant execute on function public.device_portal_resend(uuid, text, text) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------
+-- Commandes envoyées au boîtier (modification / suppression d'un serveur local)
+-- ---------------------------------------------------------------------------
+create table if not exists public.remote_commands (
+  id uuid primary key default gen_random_uuid(),
+  device_fingerprint text not null,
+  device_key text not null,
+  action text not null,
+  local_id text not null default '',
+  type text not null default '',
+  name text not null default '',
+  url text not null default '',
+  username text not null default '',
+  password text not null default '',
+  mac text not null default '',
+  created_at timestamptz not null default now(),
+  delivered_at timestamptz
+);
+
+-- Migration depuis une version précédente de cette table.
+alter table public.remote_commands drop constraint if exists remote_commands_action_check;
+alter table public.remote_commands add constraint remote_commands_action_check
+  check (action in ('delete_server', 'update_server'));
+alter table public.remote_commands add column if not exists type text not null default '';
+alter table public.remote_commands add column if not exists name text not null default '';
+alter table public.remote_commands add column if not exists url text not null default '';
+alter table public.remote_commands add column if not exists username text not null default '';
+alter table public.remote_commands add column if not exists password text not null default '';
+alter table public.remote_commands add column if not exists mac text not null default '';
+
+alter table public.remote_commands enable row level security;
+
+create index if not exists remote_commands_pending_idx
+  on public.remote_commands (lower(device_fingerprint), device_key, created_at)
+  where delivered_at is null;
+
+-- File d'attente lue par l'application au démarrage et via « Recevoir une
+-- playlist ». Les anciennes commandes en attente pour le même serveur sont
+-- remplacées pour éviter d'appliquer des changements périmés.
+create or replace function public.device_portal_queue_command(
+  p_action text,
+  p_fingerprint text,
+  p_key text,
+  p_local_id text,
+  p_type text default null,
+  p_name text default null,
+  p_url text default null,
+  p_username text default null,
+  p_password text default null,
+  p_mac text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_fp text := upper(trim(p_fingerprint));
+  v_key text := trim(p_key);
+  v_id uuid;
+begin
+  if not public.device_portal_authorized(p_fingerprint, p_key) then
+    raise exception 'access denied';
+  end if;
+  if p_action not in ('delete_server', 'update_server') then
+    raise exception 'invalid command';
+  end if;
+  if coalesce(p_local_id, '') = '' then
+    raise exception 'missing local_id';
+  end if;
+  if p_action = 'update_server' and (
+    lower(coalesce(p_type, '')) not in ('xtream', 'm3u', 'stalker')
+    or coalesce(p_url, '') = ''
+  ) then
+    raise exception 'invalid server';
+  end if;
+  if p_action = 'update_server' and not exists (
+    select 1 from public.device_servers s
+    where lower(s.device_fingerprint) = lower(v_fp)
+      and s.device_key = v_key
+      and s.local_id = p_local_id
+  ) then
+    raise exception 'unknown local server';
+  end if;
+
+  delete from public.remote_commands c
+  where lower(c.device_fingerprint) = lower(v_fp)
+    and c.device_key = v_key
+    and c.local_id = p_local_id
+    and c.delivered_at is null;
+
+  insert into public.remote_commands
+    (device_fingerprint, device_key, action, local_id,
+     type, name, url, username, password, mac)
+  values
+    (v_fp, v_key, p_action, p_local_id,
+     lower(coalesce(p_type, '')), coalesce(p_name, ''), coalesce(p_url, ''),
+     coalesce(p_username, ''), coalesce(p_password, ''), coalesce(p_mac, ''))
+  returning id into v_id;
+  return v_id;
+end;
+$$;
+
+create or replace function public.pull_remote_commands(
+  p_fingerprint text,
+  p_key text
+)
+returns setof public.remote_commands
+language sql
+security definer
+set search_path = public
+as $$
+  select *
+  from public.remote_commands
+  where lower(device_fingerprint) = lower(trim(p_fingerprint))
+    and device_key = trim(p_key)
+    and delivered_at is null
+  order by created_at
+  limit 20;
+$$;
+
+create or replace function public.ack_remote_command(
+  p_id uuid,
+  p_fingerprint text,
+  p_key text
+)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.remote_commands
+  set delivered_at = now()
+  where id = p_id
+    and lower(device_fingerprint) = lower(trim(p_fingerprint))
+    and device_key = trim(p_key)
+    and delivered_at is null;
+$$;
+
+revoke all on function public.device_portal_queue_command(text, text, text, text, text, text, text, text, text, text) from public;
+grant execute on function public.device_portal_queue_command(text, text, text, text, text, text, text, text, text, text) to anon, authenticated;
+
+revoke all on function public.pull_remote_commands(text, text) from public;
+grant execute on function public.pull_remote_commands(text, text) to anon, authenticated;
+
+revoke all on function public.ack_remote_command(uuid, text, text) from public;
+grant execute on function public.ack_remote_command(uuid, text, text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------
 -- Serveurs configurés dans l'application (remontée boîtier → portail)
 -- ---------------------------------------------------------------------------
 -- Le boîtier envoie la liste complète de ses serveurs locaux. Le portail les
@@ -370,20 +518,41 @@ as $$
       'id', null,
       'local_id', s.local_id,
       'source', 'app',
-      'type', s.type,
-      'name', s.name,
-      'url', s.url,
-      'username', s.username,
-      'password', s.password,
-      'mac', s.mac,
+      'type', coalesce(pending.type, s.type),
+      'name', coalesce(pending.name, s.name),
+      'url', coalesce(pending.url, s.url),
+      'username', coalesce(pending.username, s.username),
+      'password', coalesce(pending.password, s.password),
+      'mac', coalesce(pending.mac, s.mac),
       'is_active', s.is_active,
+      'pending', pending.action is not null,
       'created_at', s.updated_at,
       'delivered_at', null
     ) as item
     from public.device_servers s
+    left join lateral (
+      select c.action, c.type, c.name, c.url, c.username, c.password, c.mac
+      from public.remote_commands c
+      where lower(c.device_fingerprint) = lower(s.device_fingerprint)
+        and c.device_key = s.device_key
+        and c.local_id = s.local_id
+        and c.action = 'update_server'
+        and c.delivered_at is null
+      order by c.created_at desc
+      limit 1
+    ) as pending on true
     where lower(s.device_fingerprint) = lower(trim(p_fingerprint))
       and s.device_key = trim(p_key)
       and public.device_portal_authorized(p_fingerprint, p_key)
+      and not exists (
+        select 1
+        from public.remote_commands d
+        where lower(d.device_fingerprint) = lower(s.device_fingerprint)
+          and d.device_key = s.device_key
+          and d.local_id = s.local_id
+          and d.action = 'delete_server'
+          and d.delivered_at is null
+      )
       and not exists (
         select 1
         from public.remote_playlists r2
