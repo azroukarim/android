@@ -366,7 +366,9 @@
     if (row.type === "xtream") {
       return `${escapeHtml(row.username || "—")} / <span class="masked" data-secret>${escapeHtml(row.password || "—")}</span>`;
     }
-    if (row.type === "stalker") return `MAC ${escapeHtml(row.mac || "—")}`;
+    if (row.type === "stalker") {
+      return `MAC <span class="masked" data-secret>${escapeHtml(row.mac || "—")}</span>`;
+    }
     return "—";
   }
 
@@ -386,6 +388,7 @@
         <td data-label="Envoyé le">${row.created_at ? new Date(row.created_at).toLocaleString("fr-FR") : "—"}</td>
         <td data-label="Actions"></td>`;
       const actions = tr.lastElementChild;
+      const hasSecret = !!tr.querySelector("[data-secret]");
       const edit = document.createElement("button");
       edit.className = "small ghost";
       edit.textContent = "Modifier";
@@ -413,7 +416,9 @@
       del.className = "small danger";
       del.textContent = "Supprimer";
       del.onclick = () => removeRow(row);
-      actions.append(edit, reveal, hide, del);
+      actions.append(edit);
+      if (hasSecret) actions.append(reveal, hide);
+      actions.append(del);
       if (row.source !== "app") {
         const resend = document.createElement("button");
         resend.className = "small ghost";
