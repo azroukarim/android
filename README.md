@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.80
+# Streamplayer — build 5.3.81
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.80_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.80_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.80_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.80_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.81_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.81_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.81_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -37,9 +37,10 @@ Si le boîtier n'est pas autorisé, l'écran d'activation s'affiche aux couleurs
 l'application avec :
 
 - un **QR code WhatsApp** (`+212 670 965 351`) pour contacter le propriétaire ;
-- l'identifiant du boîtier : **MAC dérivé stable** en premier (format
-  `AA:BB:CC:DD:EE:FF`), puis la vraie MAC Ethernet si le système l'expose,
-  puis l'`ANDROID_ID` en secours.
+- **un seul identifiant affiché** : la **MAC dérivée de l'`ANDROID_ID`**
+  (format `AA:BB:CC:DD:EE:FF`). C'est celle qui change après une remise à zéro
+  du boîtier ; les vraies MAC et l'`ANDROID_ID` restent envoyées au serveur
+  comme secours pour les anciennes licences, mais ne sont plus affichées.
 
 L'administrateur ajoute cet identifiant dans Supabase (ou via le panneau) :
 
@@ -52,8 +53,11 @@ L'écran **Playlist** affiche la durée restante
 (`Activation : 364 jours restants`, `Activation : 2 h restantes`, ou
 `illimitée` si `expires_at` est vide).
 
-## Nouveautés 5.3.80
+## Nouveautés 5.3.81
 
+- **Écran d'activation épuré** : un seul identifiant visible, la MAC dérivée
+  qui change après chaque formatage du boîtier. Les autres candidats restent
+  transmis au serveur pour ne pas casser les licences existantes.
 - **Identifiant stable au format MAC**, dérivé de l'`ANDROID_ID` : il survit aux
   mises à jour, à l'effacement des données et aux réinstallations ; il ne change
   qu'après une remise à zéro du boîtier.
