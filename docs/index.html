@@ -187,6 +187,83 @@
         </form>
       </div>
 
+      <div class="card" style="margin-bottom:16px">
+        <h2 style="margin:0 0 4px;font-size:19px">Envoyer une playlist à distance</h2>
+        <p class="muted" style="margin:0 0 10px">
+          Saisissez la MAC et la <strong>Clé appareil</strong> affichées dans
+          « Compte » sur le boîtier. La playlist sera importée automatiquement
+          au prochain démarrage de l’application.
+        </p>
+        <form id="remoteForm">
+          <div class="row">
+            <div>
+              <label for="remoteFingerprint">MAC / identifiant</label>
+              <input id="remoteFingerprint" placeholder="AA:BB:CC:DD:EE:FF" required />
+            </div>
+            <div>
+              <label for="remoteKey">Clé appareil (6 chiffres)</label>
+              <input id="remoteKey" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" required />
+            </div>
+            <div>
+              <label for="remoteType">Type</label>
+              <select id="remoteType">
+                <option value="xtream">Xtream Codes</option>
+                <option value="m3u">Lien M3U</option>
+                <option value="stalker">MAG / Stalker</option>
+              </select>
+            </div>
+            <div>
+              <label for="remoteName">Nom (optionnel)</label>
+              <input id="remoteName" placeholder="Client, serveur…" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="remoteUrl">URL M3U / serveur Xtream</label>
+              <input id="remoteUrl" placeholder="http://serveur:8080 ou lien get.php complet" required />
+            </div>
+            <div>
+              <label for="remoteUser">Utilisateur Xtream</label>
+              <input id="remoteUser" autocomplete="off" />
+            </div>
+            <div>
+              <label for="remotePass">Mot de passe Xtream</label>
+              <input id="remotePass" type="password" autocomplete="new-password" />
+            </div>
+            <div>
+              <label for="remoteMac">MAC MAG (Stalker)</label>
+              <input id="remoteMac" placeholder="00:1A:79:…" />
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <button class="primary" type="submit">Envoyer au boîtier</button>
+        </form>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="toolbar">
+          <h2 style="margin:0;font-size:17px;flex:1 1 260px">Derniers envois</h2>
+          <button id="remoteRefresh" class="ghost" type="button">Actualiser</button>
+        </div>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Boîtier</th>
+                <th>Clé</th>
+                <th>Type</th>
+                <th>Nom</th>
+                <th>État</th>
+                <th>Envoyé le</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="remoteRows"></tbody>
+          </table>
+          <div id="remoteEmpty" class="empty" hidden>Aucun envoi pour le moment.</div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="toolbar">
           <input id="search" placeholder="Rechercher une MAC, un ANDROID_ID ou une note…" />
@@ -264,6 +341,7 @@
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const $ = (id) => document.getElementById(id);
     let licenses = [];
+    let remotes = [];
     let toastTimer;
 
     function toast(message, isError = false) {
@@ -604,12 +682,154 @@
       await load();
     }
 
+    function remoteState(row) {
+      if (row.delivered_at) return "Livrée";
+      if (row.is_active) return "En attente";
+      return "Désactivée";
+    }
+
+    function renderRemote() {
+      $("remoteEmpty").hidden = remotes.length > 0;
+      const rows = $("remoteRows");
+      rows.replaceChildren();
+      for (const item of remotes) {
+        const tr = document.createElement("tr");
+
+        const fp = document.createElement("td");
+        fp.className = "mono";
+        fp.dataset.label = "Boîtier";
+        fp.textContent = item.device_fingerprint;
+
+        const key = document.createElement("td");
+        key.className = "mono";
+        key.dataset.label = "Clé";
+        key.textContent = item.device_key;
+
+        const type = document.createElement("td");
+        type.dataset.label = "Type";
+        type.textContent = String(item.type || "").toUpperCase();
+
+        const name = document.createElement("td");
+        name.dataset.label = "Nom";
+        name.textContent = item.name || "—";
+
+        const state = document.createElement("td");
+        state.dataset.label = "État";
+        const badge = document.createElement("span");
+        badge.className = "badge " + (item.delivered_at ? "on" : "exp");
+        badge.textContent = remoteState(item);
+        state.appendChild(badge);
+
+        const created = document.createElement("td");
+        created.className = "mono";
+        created.dataset.label = "Envoyé le";
+        created.textContent = fmtDate(item.created_at);
+
+        const actions = document.createElement("td");
+        actions.dataset.label = "Actions";
+        actions.className = "actions";
+
+        const toggle = document.createElement("button");
+        toggle.className = "small " + (item.is_active ? "ghost" : "primary");
+        toggle.textContent = item.is_active ? "Désactiver" : "Activer";
+        toggle.addEventListener("click", () => toggleRemote(item));
+
+        const resend = document.createElement("button");
+        resend.className = "small ghost";
+        resend.textContent = "Renvoyer";
+        resend.addEventListener("click", () => resendRemote(item));
+
+        const remove = document.createElement("button");
+        remove.className = "small ghost";
+        remove.textContent = "Supprimer";
+        remove.addEventListener("click", () => removeRemote(item));
+
+        actions.append(toggle, resend, remove);
+        tr.append(fp, key, type, name, state, created, actions);
+        rows.appendChild(tr);
+      }
+    }
+
+    async function loadRemote() {
+      const { data, error } = await supabase
+        .from("remote_playlists")
+        .select("id, device_fingerprint, device_key, type, name, url, is_active, created_at, delivered_at")
+        .order("created_at", { ascending: false })
+        .limit(25);
+      if (error) {
+        // The table is optional until REMOTE_PLAYLISTS.sql has been run.
+        remotes = [];
+        renderRemote();
+        $("remoteEmpty").hidden = false;
+        $("remoteEmpty").textContent =
+          "Table absente : exécutez docs/REMOTE_PLAYLISTS.sql dans Supabase.";
+        return;
+      }
+      remotes = data ?? [];
+      $("remoteEmpty").textContent = "Aucun envoi pour le moment.";
+      renderRemote();
+    }
+
+    async function sendRemote(event) {
+      event.preventDefault();
+      const fingerprint = $("remoteFingerprint").value.trim();
+      const key = $("remoteKey").value.trim();
+      const type = $("remoteType").value;
+      const url = $("remoteUrl").value.trim();
+      if (!fingerprint || !/^[0-9]{6}$/.test(key)) {
+        return toast("MAC et clé appareil (6 chiffres) obligatoires", true);
+      }
+      if (!url) return toast("URL / serveur obligatoire", true);
+
+      const { error } = await supabase.from("remote_playlists").insert({
+        device_fingerprint: fingerprint,
+        device_key: key,
+        type,
+        name: $("remoteName").value.trim(),
+        url,
+        username: $("remoteUser").value.trim(),
+        password: $("remotePass").value,
+        mac: $("remoteMac").value.trim(),
+        is_active: true,
+      });
+      if (error) return toast("Envoi impossible : " + error.message, true);
+      $("remoteForm").reset();
+      toast("Playlist envoyée — le boîtier l’importera au prochain démarrage");
+      await loadRemote();
+    }
+
+    async function toggleRemote(item) {
+      const { error } = await supabase
+        .from("remote_playlists")
+        .update({ is_active: !item.is_active })
+        .eq("id", item.id);
+      if (error) return toast("Modification impossible : " + error.message, true);
+      await loadRemote();
+    }
+
+    async function resendRemote(item) {
+      const { error } = await supabase
+        .from("remote_playlists")
+        .update({ delivered_at: null, is_active: true })
+        .eq("id", item.id);
+      if (error) return toast("Renvoi impossible : " + error.message, true);
+      toast("Sera livrée au prochain démarrage du boîtier");
+      await loadRemote();
+    }
+
+    async function removeRemote(item) {
+      if (!confirm("Supprimer cet envoi pour " + item.device_fingerprint + " ?")) return;
+      const { error } = await supabase.from("remote_playlists").delete().eq("id", item.id);
+      if (error) return toast("Suppression impossible : " + error.message, true);
+      await loadRemote();
+    }
+
     async function showApp(session) {
       $("loginView").hidden = true;
       $("appView").hidden = false;
       $("userBox").hidden = false;
       $("userEmail").textContent = session.user.email ?? "";
-      await load();
+      await Promise.all([load(), loadRemote()]);
     }
 
     function showLogin() {
@@ -640,6 +860,8 @@
     });
 
     $("addForm").addEventListener("submit", addLicense);
+    $("remoteForm").addEventListener("submit", sendRemote);
+    $("remoteRefresh").addEventListener("click", loadRemote);
     $("editForm").addEventListener("submit", saveEdit);
     $("editCancel").addEventListener("click", () => $("editDialog").close());
     for (const [container, input, hint] of [
@@ -658,7 +880,7 @@
       });
       updateExpiryHint(input, hint);
     }
-    $("refresh").addEventListener("click", load);
+    $("refresh").addEventListener("click", () => Promise.all([load(), loadRemote()]));
     $("search").addEventListener("input", render);
     $("filter").addEventListener("change", render);
 

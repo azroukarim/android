@@ -1,18 +1,18 @@
 {
-  "version": "5.3.81",
-  "notes": "Ecran d'activation : seul l'identifiant sensible au formatage est affiche (MAC derivee de l'ANDROID_ID). Les vraies MAC et l'ANDROID_ID restent envoyes au serveur comme solutions de secours pour les anciens boitiers. Identifiant stable au format MAC, derive de l'ANDROID_ID : ne change qu'apres remise a zero du boitier. Expiration verifiee avec l'heure du serveur, durees courtes (2 h, 24 h) affichees en heures/minutes, protection contre le recul d'horloge et tolerance hors ligne de 3 jours. Panneau d'activation avec durees rapides : 2 h, 24 h, 12 mois, jusqu'a 2200 ou illimite.",
+  "version": "5.3.82",
+  "notes": "Nouveau : Cle appareil a 6 chiffres, affichee sur l'ecran d'activation et dans Compte, pour envoyer une playlist Xtream / M3U / MAG a distance depuis le panneau. L'application importe automatiquement la playlist envoyee a son demarrage. Ecran d'activation : seul l'identifiant sensible au formatage est affiche. Identifiant stable au format MAC derive de l'ANDROID_ID, qui ne change qu'apres remise a zero du boitier. Expiration verifiee avec l'heure du serveur, durees courtes en heures/minutes, protection contre le recul d'horloge et tolerance hors ligne de 3 jours.",
   "files": {
     "arm64-v8a": {
-      "name": "Streamplayer_v5.3.81_arm64.apk",
-      "sha256": "1DF1C90478EBEA437A494AF3F725F2FBAEDA3502C1C5B5D5937A833456F4D3E4"
+      "name": "Streamplayer_v5.3.82_arm64.apk",
+      "sha256": "56A69B1AE834B0EAA321AE231721495448F22D09B333BA0ACD7AF0E41B6BFBB5"
     },
     "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.81_arm32.apk",
-      "sha256": "CE4FCE1630BE718A5CF4E6B7317AB0F680448BE4C8DDE3C4442B126625D65CB8"
+      "name": "Streamplayer_v5.3.82_arm32.apk",
+      "sha256": "3E6DC47839369A34D7FFA991293540689C3D7BA7CACEC1A1B7935123DEEF4060"
     },
     "x86_64": {
-      "name": "Streamplayer_v5.3.81_x86_64.apk",
-      "sha256": "F2880898D33A91D1CC0C1ECC9C0DB11C29B576660A0753B2115C1B674CA5BE20"
+      "name": "Streamplayer_v5.3.82_x86_64.apk",
+      "sha256": "60C6A761EC4D0E85053C7B54FBD52B262DD141FD0BE2F27650125561DF161171"
     }
   }
 }

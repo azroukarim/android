@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.81
+# Streamplayer — build 5.3.82
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.81_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.81_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.81_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.81_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.82_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.82_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.82_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -53,8 +53,28 @@ L'écran **Playlist** affiche la durée restante
 (`Activation : 364 jours restants`, `Activation : 2 h restantes`, ou
 `illimitée` si `expires_at` est vide).
 
-## Nouveautés 5.3.81
+## Envoi de playlists à distance
 
+Le panneau **https://azroukarim.github.io/android/** permet d'envoyer un
+serveur **Xtream**, un lien **M3U** ou un portail **MAG / Stalker** à un boîtier
+précis :
+
+1. Exécuter une fois `docs/REMOTE_PLAYLISTS.sql` dans Supabase → SQL Editor.
+2. Sur le boîtier : **Compte** affiche l'**Identifiant** (MAC) et la
+   **Clé appareil** (6 chiffres).
+3. Dans le panneau : section **Envoyer une playlist à distance**, saisir la MAC,
+   la clé et le serveur.
+4. Le boîtier importe et active la playlist à son prochain démarrage (ou via
+   **Compte → Recevoir une playlist**).
+
+## Nouveautés 5.3.82
+
+- **Clé appareil à 6 chiffres** : dérivée elle aussi de l'`ANDROID_ID`, affichée
+  sur l'écran d'activation et dans **Compte**. Elle change uniquement après une
+  remise à zéro, comme la MAC dérivée.
+- **Envoi de playlist à distance** : le panneau web pousse un serveur Xtream,
+  un lien M3U ou un portail MAG vers un boîtier identifié par sa MAC + sa clé.
+  Le boîtier importe la playlist au démarrage et marque l'envoi comme livré.
 - **Écran d'activation épuré** : un seul identifiant visible, la MAC dérivée
   qui change après chaque formatage du boîtier. Les autres candidats restent
   transmis au serveur pour ne pas casser les licences existantes.

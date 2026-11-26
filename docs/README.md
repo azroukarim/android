@@ -103,6 +103,25 @@ https://azroukarim.github.io/android/
 - La table affiche les colonnes **Activation** et **Expiration** côte à côte.
 - La suppression est définitive.
 
+## 5. Envoi de playlists à distance
+
+1. Exécutez `docs/REMOTE_PLAYLISTS.sql` dans **SQL Editor** (une seule fois).
+2. Sur le boîtier, ouvrez **Compte** : notez l'**Identifiant** (MAC dérivée) et
+   la **Clé appareil** (6 chiffres).
+3. Dans le panneau, section **Envoyer une playlist à distance**, saisissez ces
+   deux valeurs et le serveur :
+   - **Xtream** : URL du serveur + utilisateur + mot de passe (ou collez un lien
+     `get.php?...` complet dans le champ URL) ;
+   - **M3U** : lien complet de la playlist ;
+   - **MAG / Stalker** : URL du portail + MAC `00:1A:79:…`.
+4. Le boîtier importe la playlist à son prochain démarrage, l'active et
+   l'affiche sur l'écran Home. La ligne passe à **Livrée** ; **Renvoyer** remet
+   l'envoi en attente.
+
+La table `remote_playlists` est protégée par RLS (admin uniquement). Le boîtier
+ne peut lire que ses propres lignes, avec le couple MAC + Clé appareil exact,
+via les fonctions `pull_remote_playlists` et `ack_remote_playlist`.
+
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS
 > n'autorisent que les comptes présents dans `public.admins`. Ne mettez jamais
 > la clé `secret` / `service_role` dans ce fichier.
