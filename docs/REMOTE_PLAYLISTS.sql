@@ -83,6 +83,16 @@ grant execute on function public.ack_remote_playlist(uuid, text, text) to anon, 
 -- L'accès est conditionné uniquement à la paire MAC + Device Key fournie par
 -- l'application. Aucun mot de passe supplémentaire n'est demandé.
 
+-- Nettoyage d'une éventuelle version précédente (3 arguments avec mot de passe)
+-- pour éviter que PostgREST continue à exposer l'ancienne signature.
+drop function if exists public.device_portal_set_password(text, text, text);
+drop function if exists public.device_portal_login(text, text, text);
+drop function if exists public.device_portal_list(text, text, text);
+drop function if exists public.device_portal_save(uuid, text, text, text, text, text, text, text, text, text);
+drop function if exists public.device_portal_delete(uuid, text, text, text);
+drop function if exists public.device_portal_resend(uuid, text, text, text);
+drop table if exists public.device_secrets;
+
 create or replace function public.device_portal_authorized(
   p_fingerprint text,
   p_key text
@@ -244,3 +254,6 @@ grant execute on function public.device_portal_delete(uuid, text, text) to anon,
 
 revoke all on function public.device_portal_resend(uuid, text, text) from public;
 grant execute on function public.device_portal_resend(uuid, text, text) to anon, authenticated;
+
+-- Force PostgREST to refresh its schema cache immediately.
+notify pgrst, 'reload schema';
