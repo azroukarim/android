@@ -1,0 +1,3 @@
+# Universal APKs stay local: they are far too large for GitHub and the
+# in-app updater only uses the per-ABI splits.
+Streamplayer_*_universal.apk
