@@ -241,6 +241,35 @@
       </div>
 
       <div class="card" style="margin-bottom:16px">
+        <h2 style="margin:0 0 4px;font-size:19px">Portail isolé du boîtier</h2>
+        <p class="muted" style="margin:0 0 10px">
+          Définissez le mot de passe d’accès du boîtier. Le client devra saisir
+          <strong>MAC + Device Key + ce mot de passe</strong> sur
+          <a href="device.html" target="_blank" rel="noopener">device.html</a>
+          pour voir, modifier ou ajouter ses serveurs Xtream / MAG sans exposer
+          les identifiants. Le mot de passe n’est jamais stocké en clair.
+        </p>
+        <form id="portalForm">
+          <div class="row">
+            <div>
+              <label for="portalFingerprint">MAC / identifiant</label>
+              <input id="portalFingerprint" placeholder="AA:BB:CC:DD:EE:FF" required />
+            </div>
+            <div>
+              <label for="portalKey">Device Key (6 chiffres)</label>
+              <input id="portalKey" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" required />
+            </div>
+            <div>
+              <label for="portalPassword">Mot de passe d’accès</label>
+              <input id="portalPassword" type="password" autocomplete="new-password" required />
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <button class="primary" type="submit">Enregistrer le mot de passe</button>
+        </form>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
         <div class="toolbar">
           <h2 style="margin:0;font-size:17px;flex:1 1 260px">Derniers envois</h2>
           <button id="remoteRefresh" class="ghost" type="button">Actualiser</button>
@@ -793,9 +822,38 @@
         is_active: true,
       });
       if (error) return toast("Envoi impossible : " + error.message, true);
+      $("portalFingerprint").value = fingerprint;
+      $("portalKey").value = key;
       $("remoteForm").reset();
       toast("Playlist envoyée — le boîtier l’importera au prochain démarrage");
       await loadRemote();
+    }
+
+    async function portalHash(fingerprint, key, password) {
+      const raw = fingerprint.trim().toUpperCase() + "|" + key.trim() + "|" + password;
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+      return Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    async function savePortalPassword(event) {
+      event.preventDefault();
+      const fingerprint = $("portalFingerprint").value.trim().toUpperCase();
+      const key = $("portalKey").value.trim();
+      const password = $("portalPassword").value;
+      if (!fingerprint || !/^[0-9]{6}$/.test(key) || !password) {
+        return toast("MAC, clé (6 chiffres) et mot de passe obligatoires", true);
+      }
+      const hash = await portalHash(fingerprint, key, password);
+      const { error } = await supabase.rpc("device_portal_set_password", {
+        p_fingerprint: fingerprint,
+        p_key: key,
+        p_hash: hash,
+      });
+      if (error) return toast("Mot de passe non enregistré : " + error.message, true);
+      $("portalPassword").value = "";
+      toast("Mot de passe du portail enregistré pour " + fingerprint);
     }
 
     async function toggleRemote(item) {
@@ -861,6 +919,7 @@
 
     $("addForm").addEventListener("submit", addLicense);
     $("remoteForm").addEventListener("submit", sendRemote);
+    $("portalForm").addEventListener("submit", savePortalPassword);
     $("remoteRefresh").addEventListener("click", loadRemote);
     $("editForm").addEventListener("submit", saveEdit);
     $("editCancel").addEventListener("click", () => $("editDialog").close());

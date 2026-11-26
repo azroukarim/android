@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Streamplayer — Portail du boîtier</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #121a2e;
+      --panel-2: #0f1628;
+      --line: #24304a;
+      --text: #eef3ff;
+      --muted: #93a1bd;
+      --blue: #7cc4ff;
+      --cyan: #59e0ff;
+      --green: #4ade80;
+      --red: #fb7185;
+      --amber: #fbbf24;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(1100px 700px at 15% -10%, #1b2b58 0%, var(--bg) 60%);
+      color: var(--text);
+      font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 26px 18px 60px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand strong { font-size: 22px; letter-spacing: .3px; }
+    .brand strong span { color: var(--cyan); }
+    .brand small { color: var(--muted); font-size: 13px; }
+    a { color: var(--blue); }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 14px 38px #0003; }
+    .card.locked { max-width: 520px; margin: 60px auto; border-color: #59e0ff55; }
+    h1, h2 { margin: 0 0 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    .muted { color: var(--muted); }
+    .hint { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    label { display: block; font-size: 13px; color: #c3cee6; margin: 0 0 5px; font-weight: 600; }
+    input, select {
+      width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--line);
+      background: var(--panel-2); color: var(--text); font-size: 14px;
+    }
+    input:focus, select:focus { outline: 2px solid var(--cyan); border-color: transparent; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .4px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    button {
+      border: 0; border-radius: 9px; padding: 10px 15px; font-size: 14px; cursor: pointer;
+      background: #2b3552; color: var(--text); transition: filter .15s ease;
+    }
+    button:hover { filter: brightness(1.15); }
+    button.primary { background: #2563eb; }
+    button.ghost { background: transparent; border: 1px solid var(--line); }
+    button.danger { background: #8f2339; }
+    button.small { padding: 6px 10px; font-size: 12.5px; }
+    #msg { min-height: 20px; margin: 12px 0 0; font-size: 14px; }
+    #msg.err { color: var(--red); }
+    #msg.ok { color: var(--green); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .badge.on { background: #14532d; color: #86efac; }
+    .badge.wait { background: #78350f; color: #fde68a; }
+    .badge.off { background: #4c1d24; color: #fda4af; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+    .scroll { overflow-x: auto; }
+    .identity { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; margin-top: 8px; }
+    .identity b { color: var(--cyan); font-size: 14px; }
+    .masked { filter: blur(5px); user-select: none; }
+    @media (max-width: 640px) {
+      .wrap { padding: 18px 12px 40px; }
+      .card { padding: 15px; }
+      th, td { display: block; width: 100%; border: 0; padding: 5px 0; }
+      thead { display: none; }
+      tbody tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+      td::before { content: attr(data-label) ": "; color: var(--muted); font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><strong>Stream<span>player</span></strong><small>Portail du boîtier</small></div>
+    <div><a href="index.html">← Panneau administrateur</a></div>
+  </header>
+
+  <section class="card locked" id="loginCard">
+    <h1>Accès au boîtier</h1>
+    <p class="hint">
+      Saisissez la <strong>MAC Address</strong> et la <strong>Device Key</strong>
+      affichées sur le boîtier (écran d’activation ou « Compte »), ainsi que le
+      mot de passe d’accès défini par l’administrateur.
+    </p>
+    <form id="loginForm">
+      <div class="row" style="grid-template-columns:1fr">
+        <div>
+          <label for="fp">MAC Address / identifiant du boîtier</label>
+          <input id="fp" class="mono" placeholder="9A:B7:04:9C:E4:0C" autocomplete="off" spellcheck="false" required />
+        </div>
+        <div>
+          <label for="key">Device Key (6 chiffres)</label>
+          <input id="key" class="mono" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="925492" autocomplete="off" required />
+        </div>
+        <div>
+          <label for="password">Mot de passe d’accès</label>
+          <input id="password" type="password" autocomplete="current-password" required />
+        </div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">Entrer</button></div>
+      <p id="loginMsg"></p>
+    </form>
+  </section>
+
+  <main id="appView" hidden>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <div>
+          <h1>Serveurs du boîtier</h1>
+          <div class="identity">
+            <span>MAC : <b class="mono" id="showFp">—</b></span>
+            <span>Clé : <b class="mono" id="showKey">—</b></span>
+          </div>
+        </div>
+        <button class="ghost small" id="logout" type="button">Quitter</button>
+      </div>
+      <p class="hint" style="margin-top:10px">
+        Modifiez un serveur existant ou ajoutez-en un nouveau. Toute modification
+        est renvoyée au boîtier à son prochain démarrage (ou via
+        « Compte → Recevoir une playlist »).
+      </p>
+    </div>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h2 id="formTitle">Ajouter un serveur</h2>
+        <button class="ghost small" id="clearForm" type="button">Nouveau / effacer</button>
+      </div>
+      <form id="serverForm" style="margin-top:10px">
+        <input type="hidden" id="sid" />
+        <div class="row">
+          <div>
+            <label for="type">Type</label>
+            <select id="type">
+              <option value="xtream">Xtream Codes</option>
+              <option value="m3u">Lien M3U</option>
+              <option value="stalker">MAG / Stalker</option>
+            </select>
+          </div>
+          <div>
+            <label for="name">Nom (optionnel)</label>
+            <input id="name" placeholder="Mon serveur" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div>
+            <label for="url" id="urlLabel">URL du serveur / portail / playlist</label>
+            <input id="url" class="mono" placeholder="http://serveur:8080" autocomplete="off" spellcheck="false" required />
+          </div>
+          <div id="xtreamCreds">
+            <label for="username">Utilisateur Xtream</label>
+            <input id="username" autocomplete="off" spellcheck="false" />
+          </div>
+          <div id="xtreamPass">
+            <label for="serverPassword">Mot de passe du serveur</label>
+            <input id="serverPassword" type="password" autocomplete="new-password" />
+          </div>
+          <div id="magMac">
+            <label for="mac">MAC MAG (00:1A:79:…)</label>
+            <input id="mac" class="mono" autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" type="submit">Enregistrer sur le boîtier</button>
+        </div>
+        <p id="msg"></p>
+      </form>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h2>Serveurs enregistrés</h2>
+        <button class="ghost small" id="refresh" type="button">Actualiser</button>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th><th>Nom</th><th>Serveur</th><th>Identifiants</th>
+              <th>État</th><th>Envoyé le</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="empty" class="muted" hidden>Aucun serveur pour ce boîtier.</p>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const SUPABASE_URL = "https://xcuihzyekoplwxoblpxv.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Dop7THLCuE0lLliWEyY9vg_MllGTnZ-";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  const $ = (id) => document.getElementById(id);
+  const state = { fp: "", key: "", password: "", hash: "", rows: [] };
+
+  function normalizeFp(value) { return String(value || "").trim().toUpperCase(); }
+  function normalizeKey(value) { return String(value || "").trim(); }
+  function msg(id, text, ok = false) {
+    const el = $(id);
+    el.textContent = text || "";
+    el.className = ok ? "ok" : text ? "err" : "";
+  }
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  }
+
+  async function computeHash() {
+    const raw = normalizeFp(state.fp) + "|" + normalizeKey(state.key) + "|" + state.password;
+    const bytes = new TextEncoder().encode(raw);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function rpc(name, extra = {}) {
+    const body = {
+      p_fingerprint: normalizeFp(state.fp),
+      p_key: normalizeKey(state.key),
+      p_hash: state.hash,
+      ...extra,
+    };
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify(body),
+    });
+    const text = await response.text();
+    if (!response.ok) {
+      let detail = text;
+      try { detail = JSON.parse(text).message || text; } catch (_) {}
+      throw new Error(detail);
+    }
+    return text ? JSON.parse(text) : null;
+  }
+
+  async function login(event) {
+    event.preventDefault();
+    msg("loginMsg", "Vérification…");
+    state.fp = normalizeFp($("fp").value);
+    state.key = normalizeKey($("key").value);
+    state.password = $("password").value;
+    if (!state.fp || !/^[0-9]{6}$/.test(state.key) || !state.password) {
+      msg("loginMsg", "MAC, clé à 6 chiffres et mot de passe sont obligatoires.");
+      return;
+    }
+    try {
+      state.hash = await computeHash();
+      const ok = await rpc("device_portal_login");
+      if (ok !== true) {
+        state.hash = "";
+        msg("loginMsg", "Accès refusé : valeurs incorrectes ou aucun mot de passe défini par l’administrateur.");
+        return;
+      }
+      sessionStorage.setItem("streamplayer_portal", JSON.stringify({
+        fp: state.fp, key: state.key, hash: state.hash,
+      }));
+      $("loginCard").hidden = true;
+      $("appView").hidden = false;
+      $("showFp").textContent = state.fp;
+      $("showKey").textContent = state.key;
+      await refresh();
+    } catch (error) {
+      state.hash = "";
+      msg("loginMsg", "Connexion impossible : " + error.message);
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem("streamplayer_portal");
+    state.fp = state.key = state.password = state.hash = "";
+    $("password").value = "";
+    state.rows = [];
+    $("appView").hidden = true;
+    $("loginCard").hidden = false;
+    msg("loginMsg", "");
+  }
+
+  function stateOf(row) {
+    if (!row.is_active) return '<span class="badge off">Désactivée</span>';
+    if (row.delivered_at) return '<span class="badge on">Livrée</span>';
+    return '<span class="badge wait">En attente</span>';
+  }
+
+  function credentials(row) {
+    if (row.type === "xtream") {
+      return `${escapeHtml(row.username || "—")} / <span class="masked">${escapeHtml(row.password || "—")}</span>`;
+    }
+    if (row.type === "stalker") return `MAC ${escapeHtml(row.mac || "—")}`;
+    return "—";
+  }
+
+  function render() {
+    const body = $("rows");
+    body.replaceChildren();
+    $("empty").hidden = state.rows.length > 0;
+    for (const row of state.rows) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td data-label="Type">${escapeHtml(String(row.type || "").toUpperCase())}</td>
+        <td data-label="Nom">${escapeHtml(row.name || "—")}</td>
+        <td data-label="Serveur">${escapeHtml(row.url || "—")}</td>
+        <td data-label="Identifiants">${credentials(row)}</td>
+        <td data-label="État">${stateOf(row)}</td>
+        <td data-label="Envoyé le">${row.created_at ? new Date(row.created_at).toLocaleString("fr-FR") : "—"}</td>
+        <td data-label="Actions"></td>`;
+      const actions = tr.lastElementChild;
+      const edit = document.createElement("button");
+      edit.className = "small ghost";
+      edit.textContent = "Modifier";
+      edit.onclick = () => fill(row);
+      const reveal = document.createElement("button");
+      reveal.className = "small ghost";
+      reveal.textContent = "Voir mot de passe";
+      reveal.onclick = () => {
+        const masked = tr.querySelector(".masked");
+        if (masked) masked.classList.toggle("masked");
+      };
+      const resend = document.createElement("button");
+      resend.className = "small ghost";
+      resend.textContent = "Renvoyer";
+      resend.onclick = () => resendRow(row.id);
+      const del = document.createElement("button");
+      del.className = "small danger";
+      del.textContent = "Supprimer";
+      del.onclick = () => removeRow(row.id);
+      actions.append(edit, reveal, resend, del);
+      body.appendChild(tr);
+    }
+  }
+
+  async function refresh() {
+    try {
+      state.rows = (await rpc("device_portal_list")) || [];
+      render();
+    } catch (error) {
+      msg("msg", "Chargement impossible : " + error.message);
+    }
+  }
+
+  function syncFields() {
+    const type = $("type").value;
+    $("xtreamCreds").hidden = type !== "xtream";
+    $("xtreamPass").hidden = type !== "xtream";
+    $("magMac").hidden = type !== "stalker";
+    $("urlLabel").textContent = type === "m3u"
+      ? "Lien complet de la playlist M3U"
+      : type === "stalker" ? "URL du portail MAG / Stalker" : "URL du serveur Xtream";
+  }
+
+  function fill(row) {
+    $("sid").value = row.id || "";
+    $("type").value = row.type === "stalker" ? "stalker" : row.type;
+    $("name").value = row.name || "";
+    $("url").value = row.url || "";
+    $("username").value = row.username || "";
+    $("serverPassword").value = row.password || "";
+    $("mac").value = row.mac || "";
+    $("formTitle").textContent = "Modifier le serveur";
+    syncFields();
+    msg("msg", "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function clearForm() {
+    $("serverForm").reset();
+    $("sid").value = "";
+    $("formTitle").textContent = "Ajouter un serveur";
+    syncFields();
+    msg("msg", "");
+  }
+
+  async function save(event) {
+    event.preventDefault();
+    const type = $("type").value;
+    const url = $("url").value.trim();
+    if (!url) return msg("msg", "L’URL est obligatoire.");
+    if (type === "xtream" && (!$("username").value.trim() || !$("serverPassword").value)) {
+      return msg("msg", "Utilisateur et mot de passe Xtream sont obligatoires.");
+    }
+    if (type === "stalker" && !$("mac").value.trim()) {
+      return msg("msg", "La MAC MAG est obligatoire.");
+    }
+    msg("msg", "Enregistrement…");
+    try {
+      let id = $("sid").value || null;
+      id = await rpc("device_portal_save", {
+        p_id: id,
+        p_type: type,
+        p_name: $("name").value.trim(),
+        p_url: url,
+        p_username: type === "xtream" ? $("username").value.trim() : "",
+        p_password: type === "xtream" ? $("serverPassword").value : "",
+        p_mac: type === "stalker" ? $("mac").value.trim() : "",
+      });
+      msg("msg", "Serveur enregistré et programmé pour le boîtier.", true);
+      clearForm();
+      await refresh();
+    } catch (error) {
+      msg("msg", "Enregistrement impossible : " + error.message);
+    }
+  }
+
+  async function resendRow(id) {
+    try {
+      await rpc("device_portal_resend", { p_id: id });
+      msg("msg", "Serveur renvoyé au boîtier.", true);
+      await refresh();
+    } catch (error) { msg("msg", "Renvoi impossible : " + error.message); }
+  }
+
+  async function removeRow(id) {
+    if (!confirm("Supprimer ce serveur du boîtier ?")) return;
+    try {
+      await rpc("device_portal_delete", { p_id: id });
+      msg("msg", "Serveur supprimé.", true);
+      await refresh();
+    } catch (error) { msg("msg", "Suppression impossible : " + error.message); }
+  }
+
+  $("loginForm").addEventListener("submit", login);
+  $("logout").addEventListener("click", logout);
+  $("clearForm").addEventListener("click", clearForm);
+  $("refresh").addEventListener("click", refresh);
+  $("type").addEventListener("change", syncFields);
+  $("serverForm").addEventListener("submit", save);
+  syncFields();
+
+  const saved = sessionStorage.getItem("streamplayer_portal");
+  if (saved) {
+    try {
+      const session = JSON.parse(saved);
+      state.fp = session.fp;
+      state.key = session.key;
+      state.hash = session.hash;
+      const ok = await rpc("device_portal_login");
+      if (ok === true) {
+        $("loginCard").hidden = true;
+        $("appView").hidden = false;
+        $("showFp").textContent = state.fp;
+        $("showKey").textContent = state.key;
+        await refresh();
+      } else {
+        logout();
+      }
+    } catch (_) { logout(); }
+  }
+</script>
+</body>
+</html>

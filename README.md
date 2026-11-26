@@ -1,4 +1,4 @@
-# Streamplayer — build 5.3.82
+# Streamplayer — build 5.3.83
 
 APK de production pour Android TV / Google TV / Fire TV, téléphones et tablettes.
 
@@ -6,9 +6,9 @@ APK de production pour Android TV / Google TV / Fire TV, téléphones et tablett
 
 | Fichier | Architecture |
 | --- | --- |
-| [`Streamplayer_v5.3.82_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
-| [`Streamplayer_v5.3.82_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
-| [`Streamplayer_v5.3.82_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.82_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
+| [`Streamplayer_v5.3.83_arm32.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_arm32.apk) | `armeabi-v7a` (boîtiers TV 32 bits) |
+| [`Streamplayer_v5.3.83_arm64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_arm64.apk) | `arm64-v8a` (téléphones/tablettes et TV 64 bits) |
+| [`Streamplayer_v5.3.83_x86_64.apk`](https://github.com/azroukarim/android/raw/main/Streamplayer_v5.3.83_x86_64.apk) | `x86_64` (émulateurs / WSA / TV x86) |
 
 ## Mise à jour automatique
 
@@ -67,8 +67,32 @@ précis :
 4. Le boîtier importe et active la playlist à son prochain démarrage (ou via
    **Compte → Recevoir une playlist**).
 
-## Nouveautés 5.3.82
+### Portail isolé du boîtier
 
+**https://azroukarim.github.io/android/device.html**
+
+Le client y saisit **MAC + Device Key + mot de passe d'accès** (défini par
+l'administrateur dans le panneau principal). Il voit alors tous les serveurs
+Xtream / M3U / MAG de son boîtier, peut les modifier, en ajouter, les renvoyer
+ou les supprimer. Les mots de passe Xtream restent masqués jusqu'à un clic
+explicite. Voir `docs/README.md`, section 6.
+
+### Identité dans le gestionnaire local
+
+Le gestionnaire ouvert depuis le QR code (`http://192.168.0.95:8089`) affiche
+désormais, en haut de page, **l'adresse locale**, la **MAC Address** et la
+**Device Key** du boîtier, avec des boutons **Copier** et un lien direct vers le
+portail isolé. La même paire apparaît dans l'application, à côté du QR code,
+dans **Changer la liste → QR / gestion Web**.
+
+## Nouveautés 5.3.83
+
+- **Portail isolé `device.html`** : accès par MAC + Device Key + mot de passe,
+  avec consultation, modification, ajout, renvoi et suppression des serveurs du
+  boîtier. Les secrets ne sont visibles qu'après déverrouillage.
+- **Identité dans le gestionnaire local** : la MAC et la Device Key sont
+  affichées à côté de `http://192.168.0.95:8089`, et également à côté du QR code
+  dans **Changer la liste**.
 - **Clé appareil à 6 chiffres** : dérivée elle aussi de l'`ANDROID_ID`, affichée
   sur l'écran d'activation et dans **Compte**. Elle change uniquement après une
   remise à zéro, comme la MAC dérivée.

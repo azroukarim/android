@@ -122,6 +122,27 @@ La table `remote_playlists` est protégée par RLS (admin uniquement). Le boîti
 ne peut lire que ses propres lignes, avec le couple MAC + Clé appareil exact,
 via les fonctions `pull_remote_playlists` et `ack_remote_playlist`.
 
+## 6. Portail isolé du boîtier (`device.html`)
+
+URL : **https://azroukarim.github.io/android/device.html**
+
+Page autonome pour le client : elle n'affiche aucun serveur tant que l'utilisateur
+n'a pas saisi **MAC + Device Key + mot de passe d'accès**.
+
+1. Dans le panneau administrateur, section **Portail isolé du boîtier**,
+   enregistrez un mot de passe pour la MAC du boîtier. Il est stocké uniquement
+   sous forme de hash SHA-256 (`MAC|DEVICE_KEY|mot de passe`).
+2. Le client ouvre `device.html`, saisit les trois valeurs, puis voit tous les
+   serveurs Xtream / M3U / MAG associés à cette MAC.
+3. Il peut **modifier** un serveur (le mot de passe Xtream reste masqué jusqu'à
+   un clic sur « Voir mot de passe »), en **ajouter**, le **renvoyer** au boîtier
+   ou le **supprimer**.
+4. Toute modification remet le serveur en attente de livraison ; le boîtier le
+   récupère au démarrage ou via **Compte → Recevoir une playlist**.
+
+Les fonctions `device_portal_*` vérifient le hash à chaque appel. Sans le mot de
+passe, ni la liste ni les identifiants ne sont accessibles.
+
 > Le panneau utilise uniquement la clé **publishable**. Les policies RLS
 > n'autorisent que les comptes présents dans `public.admins`. Ne mettez jamais
 > la clé `secret` / `service_role` dans ce fichier.
