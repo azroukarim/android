@@ -1,18 +1,18 @@
 {
     "version":  "5.3.90",
-    "notes":  "Format d\u0027image : nouveau selecteur avec tous les ratios (4:3, 16:10, 3:2, 16:9, 18:9, 19.5:9, 20:9, 21:9, 2.35:1, 2.39:1), ZOOM 2.35:1, REDUIT et PLEIN pour remplir l\u0027ecran des telephones. Le choix s\u0027applique a toutes les chaines.",
+    "notes":  "Recherche reduite a une loupe dans l\u0027en-tete. En direct : premiere pression sur une chaine lance le Mini TV, une seconde pression sur la meme chaine ouvre le plein ecran avec barre d\u0027infos 3s (rappel par fleche bas). Mode immersif renforce pour telephones.",
     "files":  {
                   "arm64-v8a":  {
                                     "name":  "Streamplayer_v5.3.90_arm64.apk",
-                                    "sha256":  "a0be00d4ac5b60d44e05923913f9c0cc21237855548805f0b88da631a743ec1c"
+                                    "sha256":  "ed5b2e8300cbb25bd0948e734a222f086b62f30390dff279a8646e50c867ac2a"
                                 },
                   "armeabi-v7a":  {
                                       "name":  "Streamplayer_v5.3.90_arm32.apk",
-                                      "sha256":  "788739d0cb66196072f944739680a48ce077fef72d03dcf1ca1a4e32ed055878"
+                                      "sha256":  "1885406737e0cf0223c26966594c9c2101ad7cbaabbcd3e91013816a8c6a1645"
                                   },
                   "x86_64":  {
                                  "name":  "Streamplayer_v5.3.90_x86_64.apk",
-                                 "sha256":  "442c93fc320ffeaa332dc61145d0ef89e0c1e51cd947612ebcc5373864ca44e7"
+                                 "sha256":  "a66994138d07f469da92c850e236c091cf265780306776dfde46c914720ea6ad"
                              }
               }
 }
