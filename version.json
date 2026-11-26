@@ -1,18 +1,18 @@
-﻿{
-  "version": "5.3.87",
-  "notes": "Portail: un clic sur l'identifiant MAC du panneau ouvre la page du boitier avec ses serveurs, et la Device Key peut etre changee depuis cette page puis adoptée par l'application. Tous les serveurs (Boitier et Panneau) restent modifiables et supprimables. Interface playlist: QR plus petit, message Streamplayer, 3x3 cartes visibles et defilement par ligne.",
-  "files": {
-    "arm64-v8a": {
-      "name": "Streamplayer_v5.3.87_arm64.apk",
-      "sha256": "c0f07abba32f01179f12935bad8db459e4455d114960bdd16d2a166d1a43b5d9"
-    },
-    "armeabi-v7a": {
-      "name": "Streamplayer_v5.3.87_arm32.apk",
-      "sha256": "bf3a6e85255704c8f658efc0bbb82be2445afdc48d5e3bebe688f272e6972cc6"
-    },
-    "x86_64": {
-      "name": "Streamplayer_v5.3.87_x86_64.apk",
-      "sha256": "4521344feb46025eee2076c9fbbcddee467a20fd9264e3db1ea37ec3ea2a0a8d0"
-    }
-  }
+{
+    "version":  "5.3.87",
+    "notes":  "Portail : un clic sur l\u0027identifiant MAC du panneau ouvre la page du boitier avec ses serveurs, et la Device Key peut etre changee depuis cette page puis adoptee par l\u0027application. Tous les serveurs (Boitier et Panneau) restent modifiables et supprimables. Interface playlist : QR plus petit, message Streamplayer, 3x3 cartes visibles et defilement par ligne.",
+    "files":  {
+                  "arm64-v8a":  {
+                                    "name":  "Streamplayer_v5.3.87_arm64.apk",
+                                    "sha256":  "c0f07abba32f01179f12935bad8db459e4455d114960bdd16d2a166d1a43b5d9"
+                                },
+                  "armeabi-v7a":  {
+                                      "name":  "Streamplayer_v5.3.87_arm32.apk",
+                                      "sha256":  "bf3a6e85255704c8f658efc0bbb82be2445afdc48d5e3bebe688f272e6972cc6"
+                                  },
+                  "x86_64":  {
+                                 "name":  "Streamplayer_v5.3.87_x86_64.apk",
+                                 "sha256":  "4521344feb46025eee2076c9fbbcdee467a20fd9264e3db1ea37ec3ea2a0a8d0"
+                             }
+              }
 }
