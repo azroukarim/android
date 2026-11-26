@@ -246,9 +246,22 @@
     return text ? JSON.parse(text) : null;
   }
 
+  async function loadRows() {
+    try {
+      state.rows = (await rpc("device_portal_list")) || [];
+    } catch (error) {
+      if (/PGRST202|Could not find the function|no matches were found/i.test(error.message)) {
+        state.rows = (await rpc("pull_remote_playlists")) || [];
+      } else {
+        throw error;
+      }
+    }
+    return state.rows;
+  }
+
   async function login(event) {
     event.preventDefault();
-    msg("loginMsg", "Vérification…");
+    msg("loginMsg", "Recherche des serveurs…");
     state.fp = normalizeFp($("fp").value);
     state.key = normalizeKey($("key").value);
     if (!state.fp || !/^[0-9]{6}$/.test(state.key)) {
@@ -256,11 +269,7 @@
       return;
     }
     try {
-      const ok = await rpc("device_portal_login");
-      if (ok !== true) {
-        msg("loginMsg", "Accès refusé : cette paire MAC / clé n’est pas reconnue.");
-        return;
-      }
+      const rows = await loadRows();
       sessionStorage.setItem("streamplayer_portal", JSON.stringify({
         fp: state.fp, key: state.key,
       }));
@@ -268,7 +277,11 @@
       $("appView").hidden = false;
       $("showFp").textContent = state.fp;
       $("showKey").textContent = state.key;
-      await refresh();
+      render();
+      msg("msg", rows.length
+        ? `${rows.length} serveur(s) trouvé(s) pour cette paire MAC / clé.`
+        : "Aucun serveur enregistré pour cette paire MAC / clé. Vous pouvez en ajouter un ci-dessous.",
+        rows.length > 0);
     } catch (error) {
       msg("loginMsg", "Connexion impossible : " + error.message);
     }
@@ -338,7 +351,7 @@
 
   async function refresh() {
     try {
-      state.rows = (await rpc("device_portal_list")) || [];
+      await loadRows();
       render();
     } catch (error) {
       msg("msg", "Chargement impossible : " + error.message);
@@ -439,16 +452,16 @@
       const session = JSON.parse(saved);
       state.fp = session.fp;
       state.key = session.key;
-      const ok = await rpc("device_portal_login");
-      if (ok === true) {
-        $("loginCard").hidden = true;
-        $("appView").hidden = false;
-        $("showFp").textContent = state.fp;
-        $("showKey").textContent = state.key;
-        await refresh();
-      } else {
-        logout();
-      }
+      const rows = await loadRows();
+      $("loginCard").hidden = true;
+      $("appView").hidden = false;
+      $("showFp").textContent = state.fp;
+      $("showKey").textContent = state.key;
+      render();
+      msg("msg", rows.length
+        ? `${rows.length} serveur(s) trouvé(s) pour cette paire MAC / clé.`
+        : "Aucun serveur enregistré pour cette paire MAC / clé.",
+        rows.length > 0);
     } catch (_) { logout(); }
   }
 </script>
