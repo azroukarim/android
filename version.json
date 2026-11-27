@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.94",
-    "notes":  "Chaines TV en plein ecran sur telephone (migration forcee), films deja plein ecran. Pas de bandes noires.",
+    "version":  "5.3.95",
+    "notes":  "Chaines TV plein ecran force sur telephone (fix live vs films).",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.94_arm64.apk",
-                                    "sha256":  "a51308194235604d335943cadd81d3e78c26db433ea6cba2f22a30d89faa126c"
+                                    "name":  "Streamplayer_v5.3.95_arm64.apk",
+                                    "sha256":  "5dc1cdc3902e2188993df8a39dba3bff49c46338e63a28ef52624925455a5303"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.94_arm32.apk",
-                                      "sha256":  "e92172514a808d0f1da3523518b9edb20416c4b7039d5c264ab7223190899c03"
+                                      "name":  "Streamplayer_v5.3.95_arm32.apk",
+                                      "sha256":  "aca40de8bcfcf054cd36434000ea3e372b31590f68ebe130789634df2009a0dd"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.94_x86_64.apk",
-                                 "sha256":  "a4522663c53801c24a3f3c3fa61f7a7ae985c2c8dca39c1fb2443728a29915f4"
+                                 "name":  "Streamplayer_v5.3.95_x86_64.apk",
+                                 "sha256":  "e11927399f7831aafe53f560a52962897355dce00ae8162d62fa9ddd1ff2a21f"
                              }
               }
 }
