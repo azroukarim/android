@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.91",
-    "notes":  "En direct : premiere pression sur une chaine lance le Mini TV, seconde pression sur la meme chaine ouvre le plein ecran avec barre d\u0027infos 3s (rappel par fleche bas). Mode immersif renforce pour telephones (Redmi etc.). Recherche reduite a une loupe.",
+    "version":  "5.3.92",
+    "notes":  "Plein ecran par defaut sur les telephones (format rempli, comme TiviMate) : plus de bandes noires sur les cotes. La licence affiche sa date d\u0027expiration (et 2063 = illimitee).",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.91_arm64.apk",
-                                    "sha256":  "7263ef5b3b71468630238ad1b2c13d775ac5a1730bfdd77e9cc70ec055298ba6"
+                                    "name":  "Streamplayer_v5.3.92_arm64.apk",
+                                    "sha256":  "61b3dcdb9855967eecb345651f7e090732bfa0569d3ab37425d163d720f46739"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.91_arm32.apk",
-                                      "sha256":  "ce6b75e5199ee883d7b5d8b74c72537d6c7fd6b114bca72f4f16b5694fc1b869"
+                                      "name":  "Streamplayer_v5.3.92_arm32.apk",
+                                      "sha256":  "56ae08424fee14eb941f3d5ff0ee19dfae690db2a526b5c401aedbb537a0e085"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.91_x86_64.apk",
-                                 "sha256":  "193b478dbcfc112ba851a10d1768dbba6f3b13ecce1250bf0aa78f3fd227c6b8"
+                                 "name":  "Streamplayer_v5.3.92_x86_64.apk",
+                                 "sha256":  "4b30532883d2cf8e1eb01e1acda65cca3f53f3d2208c1a358e0292f21f3dea86"
                              }
               }
 }
