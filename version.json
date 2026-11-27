@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.97",
-    "notes":  "Police: Normal (w400) au lieu de Bold/ExtraBold par defaut.",
+    "version":  "5.3.98",
+    "notes":  "Police dans les listes: Black(w900) remplace par Bold(w700).",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.97_arm64.apk",
-                                    "sha256":  "7ce1ce7a6216c981fe70578992e717892e4caccf5f9c22adc3ed941ebd3a3b3d"
+                                    "name":  "Streamplayer_v5.3.98_arm64.apk",
+                                    "sha256":  "171923e54de586879f980c640dc1ea6d23a7df23fa45d70073b7ef30fd8ecff8"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.97_arm32.apk",
-                                      "sha256":  "34f28e2fc69b44cb0d37c6f0ed7e183dad3b9265f12829cdbcdaffb52c588814"
+                                      "name":  "Streamplayer_v5.3.98_arm32.apk",
+                                      "sha256":  "ee9e0edeade0bc730220b92e1b82ef9e17eb3d7a309de28b330e534729227a5f"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.97_x86_64.apk",
-                                 "sha256":  "874c693774bf26d5a3065d227e6e825ebeddd00584c71650d7c9351013d9b9b9"
+                                 "name":  "Streamplayer_v5.3.98_x86_64.apk",
+                                 "sha256":  "ecd75709bf9b8398067fd772ea43881b0ec461b2ba58779fb72fca3ac4b2d465"
                              }
               }
 }
