@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.98",
-    "notes":  "Police dans les listes: Black(w900) remplace par Bold(w700).",
+    "version":  "5.3.99",
+    "notes":  "Listes chaines/bouquets: poids Normal(w500), selection w700 (fini le Black).",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.98_arm64.apk",
-                                    "sha256":  "171923e54de586879f980c640dc1ea6d23a7df23fa45d70073b7ef30fd8ecff8"
+                                    "name":  "Streamplayer_v5.3.99_arm64.apk",
+                                    "sha256":  "5d1a233e2c0d54de7b7c763a2721e2803c78b51ddd1c2421277053d977f2c4fc"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.98_arm32.apk",
-                                      "sha256":  "ee9e0edeade0bc730220b92e1b82ef9e17eb3d7a309de28b330e534729227a5f"
+                                      "name":  "Streamplayer_v5.3.99_arm32.apk",
+                                      "sha256":  "183d1309cfb5085d19a8494d61611f00e8b70ee91b410623118acf630ab2c64b"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.98_x86_64.apk",
-                                 "sha256":  "ecd75709bf9b8398067fd772ea43881b0ec461b2ba58779fb72fca3ac4b2d465"
+                                 "name":  "Streamplayer_v5.3.99_x86_64.apk",
+                                 "sha256":  "9eaada140fa02c0b016848fd538a1683aa25e6f7e32b793e73e3db0f7bb1895c"
                              }
               }
 }
