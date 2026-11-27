@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.100",
-    "notes":  "Noms des chaines et bouteilles plus petits (12.5/10.5) pour eviter tout chevauchement.",
+    "version":  "5.3.101",
+    "notes":  "Films/Series: liste des categories en 12px Normal (w500/w700), sans contour; taille de texte fixe sur telephone.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.100_arm64.apk",
-                                    "sha256":  "d794a842317faa087277ece14578a713c467c73bfde3420c1ddafc8dd71ab36e"
+                                    "name":  "Streamplayer_v5.3.101_arm64.apk",
+                                    "sha256":  "2a6880601fd2c63fd52304a72491b2a7f20f3682161e7fce12bc6279334fb5c2"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.100_arm32.apk",
-                                      "sha256":  "1770c71ad38c81fb72302d6c25cf7940898b16e79abb4f2d2c9d8cbfac5af6f0"
+                                      "name":  "Streamplayer_v5.3.101_arm32.apk",
+                                      "sha256":  "25d10a9727c85a785bf160b912cd3d6b780d37ef6f25a6539c83421f9addb09f"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.100_x86_64.apk",
-                                 "sha256":  "740b818c89ae3826839c7a82019ed43bbc34b594f3973a6fc91c1e1ec750a584"
+                                 "name":  "Streamplayer_v5.3.101_x86_64.apk",
+                                 "sha256":  "1dc713ac4b56446c5865a2a8922d5760c31141c765dae2fbbbc6f4a51edabbc0"
                              }
               }
 }
