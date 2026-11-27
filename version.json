@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.92",
-    "notes":  "Plein ecran par defaut sur les telephones (format rempli, comme TiviMate) : plus de bandes noires sur les cotes. La licence affiche sa date d\u0027expiration (et 2063 = illimitee).",
+    "version":  "5.3.93",
+    "notes":  "Migration automatique vers PLEIN sur les telephones (plus de bandes noires), meme si un ancien mode etait enregistre. Date d\u0027expiration de la licence. Sous-titres : rejet des fichiers persans etiquetes arabe.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.92_arm64.apk",
-                                    "sha256":  "61b3dcdb9855967eecb345651f7e090732bfa0569d3ab37425d163d720f46739"
+                                    "name":  "Streamplayer_v5.3.93_arm64.apk",
+                                    "sha256":  "3164ae8049680957ee29980e9d4279d2fa34494f3b16438ec2edeca136931330"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.92_arm32.apk",
-                                      "sha256":  "56ae08424fee14eb941f3d5ff0ee19dfae690db2a526b5c401aedbb537a0e085"
+                                      "name":  "Streamplayer_v5.3.93_arm32.apk",
+                                      "sha256":  "f877306a94d51060c6fc7d302192bfbe54ea8d62aa7175d4edd76868be5e4cee"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.92_x86_64.apk",
-                                 "sha256":  "4b30532883d2cf8e1eb01e1acda65cca3f53f3d2208c1a358e0292f21f3dea86"
+                                 "name":  "Streamplayer_v5.3.93_x86_64.apk",
+                                 "sha256":  "2dec632e49adb56bfa5f80a2416b2c2e66e65d83dfa365a0db655dd2cd377429"
                              }
               }
 }
