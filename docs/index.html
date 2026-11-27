@@ -169,11 +169,11 @@
               <label for="expires">Expiration (optionnel)</label>
               <input id="expires" type="datetime-local" />
               <div class="presets" id="expiryPresets" role="group" aria-label="Durées rapides">
-                <button type="button" data-kind="2h">+ 2 heures</button>
-                <button type="button" data-kind="24h">+ 24 heures</button>
-                <button type="button" data-kind="12m">+ 12 mois</button>
-                <button type="button" data-kind="2200">Jusqu’à 2200</button>
-                <button type="button" data-kind="never">Illimité</button>
+                 <button type="button" data-kind="24h">+ 24 heures</button>
+                 <button type="button" data-kind="48h">+ 48 heures</button>
+                 <button type="button" data-kind="7d">+ 7 jours</button>
+                 <button type="button" data-kind="365d">+ 365 jours</button>
+                 <button type="button" data-kind="2063">Illimité (jusqu’à 2063)</button>
               </div>
               <span id="expiryHint" class="muted"></span>
             </div>
@@ -321,11 +321,11 @@
       <label for="editExpires">Expiration</label>
       <input id="editExpires" type="datetime-local" />
       <div class="presets" id="editExpiryPresets" role="group" aria-label="Durées rapides">
-        <button type="button" data-kind="2h">+ 2 heures</button>
-        <button type="button" data-kind="24h">+ 24 heures</button>
-        <button type="button" data-kind="12m">+ 12 mois</button>
-        <button type="button" data-kind="2200">Jusqu’à 2200</button>
-        <button type="button" data-kind="never">Illimité</button>
+                 <button type="button" data-kind="24h">+ 24 heures</button>
+                 <button type="button" data-kind="48h">+ 48 heures</button>
+                 <button type="button" data-kind="7d">+ 7 jours</button>
+                 <button type="button" data-kind="365d">+ 365 jours</button>
+                 <button type="button" data-kind="2063">Illimité (jusqu’à 2063)</button>
       </div>
       <span id="editExpiryHint" class="muted"></span>
       <label class="check" for="editActive" style="margin-top:12px">
@@ -408,16 +408,13 @@
     // instead of shortening it.
     function presetDate(kind, baseMs = 0) {
       const base = new Date(Math.max(Date.now(), baseMs || 0));
-      if (kind === "2h") return new Date(base.getTime() + 2 * 60 * 60 * 1000);
       if (kind === "24h") return new Date(base.getTime() + 24 * 60 * 60 * 1000);
-      if (kind === "12m") {
-        const d = new Date(base);
-        d.setMonth(d.getMonth() + 12);
-        return d;
-      }
-      if (kind === "2200") {
-        // End of 2200, in the admin's local time.
-        return new Date(2200, 11, 31, 23, 59, 0, 0);
+      if (kind === "48h") return new Date(base.getTime() + 48 * 60 * 60 * 1000);
+      if (kind === "7d") return new Date(base.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (kind === "365d") return new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
+      if (kind === "2063") {
+        // Lifetime: end of 2063, in the admin's local time.
+        return new Date(2063, 11, 31, 23, 59, 0, 0);
       }
       return null;
     }
@@ -615,11 +612,11 @@
         extend.setAttribute("aria-label", "Changer la durée d’activation");
         for (const [value, label] of [
           ["", "Durée…"],
-          ["2h", "+ 2 heures"],
           ["24h", "+ 24 heures"],
-          ["12m", "+ 12 mois"],
-          ["2200", "Jusqu’à 2200"],
-          ["never", "Illimité"],
+          ["48h", "+ 48 heures"],
+          ["7d", "+ 7 jours"],
+          ["365d", "+ 365 jours"],
+          ["2063", "Illimité (jusqu’à 2063)"],
         ]) {
           const option = document.createElement("option");
           option.value = value;
