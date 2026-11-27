@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.101",
-    "notes":  "Films/Series: liste des categories en 12px Normal (w500/w700), sans contour; taille de texte fixe sur telephone.",
+    "version":  "5.3.102",
+    "notes":  "En direct: liste des bouquets alignee sur la liste des chaines (12.5px, w500/w700, sans contour).",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.101_arm64.apk",
-                                    "sha256":  "2a6880601fd2c63fd52304a72491b2a7f20f3682161e7fce12bc6279334fb5c2"
+                                    "name":  "Streamplayer_v5.3.102_arm64.apk",
+                                    "sha256":  "367394284ecff245c6ca0d13705612cad245e08208fce8eaf8d8ba5c920a8967"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.101_arm32.apk",
-                                      "sha256":  "25d10a9727c85a785bf160b912cd3d6b780d37ef6f25a6539c83421f9addb09f"
+                                      "name":  "Streamplayer_v5.3.102_arm32.apk",
+                                      "sha256":  "5e724929391b5fcc1ab2d980218590ee7c0eab6c425a67601272fa2eddc6a5cd"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.101_x86_64.apk",
-                                 "sha256":  "1dc713ac4b56446c5865a2a8922d5760c31141c765dae2fbbbc6f4a51edabbc0"
+                                 "name":  "Streamplayer_v5.3.102_x86_64.apk",
+                                 "sha256":  "1ee79e5e7379bf69aa8db93cb7b2be99838d24b272026e70b213f41685336df7"
                              }
               }
 }
