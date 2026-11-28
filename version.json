@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.108",
-    "notes":  "Meteo par ville (reglages) affichee dans l\u0027infobar sous LECTURE; affiche des films/series: poster agrandi, titre sur 2 lignes, bouquet dans l\u0027en-tete; sous-titres: recherche par titre/annee/langue du site local et fichiers AR-*.srt.",
+    "version":  "5.3.109",
+    "notes":  "Correction de la recherche de ville meteo (champs Open-Meteo) et aide pour les noms en arabe.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.108_arm64.apk",
-                                    "sha256":  "5c4ea19dc67bd381cabe027e52efca9d2f52075dc5a36500263dfac49fd2bea8"
+                                    "name":  "Streamplayer_v5.3.109_arm64.apk",
+                                    "sha256":  "a8fa83200feebca04a0790a3b8bd747cc1c848e26858fb12d45417ec4382f627"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.108_arm32.apk",
-                                      "sha256":  "fc2612a9a801fcfc2e658ec0efcb36090e5051f9c5dca3322f9f4857b08a139e"
+                                      "name":  "Streamplayer_v5.3.109_arm32.apk",
+                                      "sha256":  "443b2258b89c08768872e998789a04246511bec57466f508675c48e789ac5856"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.108_x86_64.apk",
-                                 "sha256":  "2057426c60901ef93e6cefc0a0bdb71a544eb6b8fc8b59844fde67c6c0f8f7dd"
+                                 "name":  "Streamplayer_v5.3.109_x86_64.apk",
+                                 "sha256":  "f355f7aa269db799b6e8caa6aa09cdb506ea1a591279e7423f0a758d7d02fd2f"
                              }
               }
 }
