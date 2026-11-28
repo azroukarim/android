@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.107",
-    "notes":  "Infobar: entree animee du bloc EPG (fondu + glissement), titre defilant sur une zone limitee.",
+    "version":  "5.3.108",
+    "notes":  "Meteo par ville (reglages) affichee dans l\u0027infobar sous LECTURE; affiche des films/series: poster agrandi, titre sur 2 lignes, bouquet dans l\u0027en-tete; sous-titres: recherche par titre/annee/langue du site local et fichiers AR-*.srt.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.107_arm64.apk",
-                                    "sha256":  "11c64bd1ea5bee4f0eecfa8f6d63e65e227ffd6b65d0d55377b18bb39a80b993"
+                                    "name":  "Streamplayer_v5.3.108_arm64.apk",
+                                    "sha256":  "5c4ea19dc67bd381cabe027e52efca9d2f52075dc5a36500263dfac49fd2bea8"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.107_arm32.apk",
-                                      "sha256":  "e72db4b09d1a357a1b182a16f7f402cc32fe68d895d90544d06ad08b350b3a8a"
+                                      "name":  "Streamplayer_v5.3.108_arm32.apk",
+                                      "sha256":  "fc2612a9a801fcfc2e658ec0efcb36090e5051f9c5dca3322f9f4857b08a139e"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.107_x86_64.apk",
-                                 "sha256":  "c24d49a9a23a8a599daa5ce317ad67a4c0a1fff213130d346dcc5ad10e375404"
+                                 "name":  "Streamplayer_v5.3.108_x86_64.apk",
+                                 "sha256":  "2057426c60901ef93e6cefc0a0bdb71a544eb6b8fc8b59844fde67c6c0f8f7dd"
                              }
               }
 }
