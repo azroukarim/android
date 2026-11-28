@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.117",
-    "notes":  "Sous-titres: titre exact prioritaire sur la duree, titres traduits et noms de pistes propres.",
+    "version":  "5.3.118",
+    "notes":  "Sous-titres: titre propre teste en premier, titre exact prioritaire, titres traduits et noms de pistes propres.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.117_arm64.apk",
-                                    "sha256":  "296ce1aa7ecc47140ec5b01c6beb7ce9b9307d2fe51f1ba1a45baede428005fb"
+                                    "name":  "Streamplayer_v5.3.118_arm64.apk",
+                                    "sha256":  "4f65f63867a979e842cf99deb05820e2a785a5fa2df4ba0c3eecd17cb83e5500"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.117_arm32.apk",
-                                      "sha256":  "54d6d51fb90e6a20674f0ac4592f1edda82d6d2160509b91a15072cfe85f8919"
+                                      "name":  "Streamplayer_v5.3.118_arm32.apk",
+                                      "sha256":  "7caab40ff62333daedebdd5f25fbb5092b4588901e98c50dd0412c7c88e0bb1a"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.117_x86_64.apk",
-                                 "sha256":  "e723e244aefa60a07449cd72c3135902625e21d89427f2a3709440db11bd2cc8"
+                                 "name":  "Streamplayer_v5.3.118_x86_64.apk",
+                                 "sha256":  "d7e9b198538ba901f0346aedcc5ae9e7bf75053d9a08f624ee62dea256683777"
                              }
               }
 }
