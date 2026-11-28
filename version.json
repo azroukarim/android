@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.113",
-    "notes":  "Sous-titres: selection de la version dont la fin correspond exactement a la duree du film.",
+    "version":  "5.3.115",
+    "notes":  "Sous-titres: nom de piste propre (Track 15 - [AR-Film]), choix selon la duree et diagnostic /api/subtitles/test.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.113_arm64.apk",
-                                    "sha256":  "34d89955b1aa5198bb4ad9de5adfe49ab87aadc56ec24c94afe27523fd3f95f4"
+                                    "name":  "Streamplayer_v5.3.115_arm64.apk",
+                                    "sha256":  "6ca9d7057cd16b770f15769284e4dc3b4033b71169f745380d7892dafba58138"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.113_arm32.apk",
-                                      "sha256":  "02d07ce20fa845231dfc66b4a5b2206fd38be6ab5bc44b59f6db71985221ef24"
+                                      "name":  "Streamplayer_v5.3.115_arm32.apk",
+                                      "sha256":  "2663fbe199faeb09532255626edaa946129dd8b44f4f539450daacbfc71c3a48"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.113_x86_64.apk",
-                                 "sha256":  "2b6f5c552fcff5a827feb758044267f433c0b05331e8230f437219f44fbc9fc6"
+                                 "name":  "Streamplayer_v5.3.115_x86_64.apk",
+                                 "sha256":  "b30034e31613bd82f1ea71660b5071cc74f5bbe29f1984efc246de4a783f97d9"
                              }
               }
 }
