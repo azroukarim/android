@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.104",
-    "notes":  "EPG: correction hauteur du marquee (le titre ne disparait plus), defilement des titres longs.",
+    "version":  "5.3.105",
+    "notes":  "Infobar: horloge reduite en haut a droite, suppression EN DIRECT/LIVE et du nom de chaine en haut, logo agrandi.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.104_arm64.apk",
-                                    "sha256":  "9798453fb9735aed5fc0db26ad3717bcfb0780e11f00b00f6ca057d3d97ff2d1"
+                                    "name":  "Streamplayer_v5.3.105_arm64.apk",
+                                    "sha256":  "ee7d1cd89c23fd932c80d3d5c0ae12a6ad7e158dbb8b526899fa5816b84b4307"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.104_arm32.apk",
-                                      "sha256":  "71b01031cb0f1296a4e76644fdf62657601161fab65a0b8687baf174a3845c89"
+                                      "name":  "Streamplayer_v5.3.105_arm32.apk",
+                                      "sha256":  "193c6d4218409d65afd642a0ec53187c8f73a2eab0b94ca9056ca191c918d998"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.104_x86_64.apk",
-                                 "sha256":  "4ac7097b0e8cffaac65ad024589dba0f85b7fbfce54badd30b80a0999e78f222"
+                                 "name":  "Streamplayer_v5.3.105_x86_64.apk",
+                                 "sha256":  "027c6607a06572c876a21a6e93d8b3f047bdc7df2d7da72a613b03b6a31f0582"
                              }
               }
 }
