@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.116",
-    "notes":  "Sous-titres: compatibilite des titres traduits (Apocalypse Z / Apocalipsis Z) et noms de pistes propres.",
+    "version":  "5.3.117",
+    "notes":  "Sous-titres: titre exact prioritaire sur la duree, titres traduits et noms de pistes propres.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.116_arm64.apk",
-                                    "sha256":  "6bdb3db389222277ead314f510361c8e8897db77af9bcf30393ae96c83e4602f"
+                                    "name":  "Streamplayer_v5.3.117_arm64.apk",
+                                    "sha256":  "296ce1aa7ecc47140ec5b01c6beb7ce9b9307d2fe51f1ba1a45baede428005fb"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.116_arm32.apk",
-                                      "sha256":  "b3f107abd8ad770942b1462065b880cb0da1a9bed086c55d9f4b8686c3932b0a"
+                                      "name":  "Streamplayer_v5.3.117_arm32.apk",
+                                      "sha256":  "54d6d51fb90e6a20674f0ac4592f1edda82d6d2160509b91a15072cfe85f8919"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.116_x86_64.apk",
-                                 "sha256":  "db99be036efee9e1e082baaa77efadf8ea899ad88b9320be5619ed3ad49e816d"
+                                 "name":  "Streamplayer_v5.3.117_x86_64.apk",
+                                 "sha256":  "e723e244aefa60a07449cd72c3135902625e21d89427f2a3709440db11bd2cc8"
                              }
               }
 }
