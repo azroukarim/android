@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.120",
-    "notes":  "Sous-titres: support des prefixes [FR]/VOD/4K sans tiret, ex. Scream 7, en plus des titres traduits.",
+    "version":  "5.3.121",
+    "notes":  "Sous-titres: recherche lancee meme si le moteur video tarde, prefixes [FR]/VOD/4K et libelles SOUS-TITRES.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.120_arm64.apk",
-                                    "sha256":  "d8a0856ae0bf3a33154c7d2af36c78a8eb4d4d2b73449aadc56c30cee7f772b5"
+                                    "name":  "Streamplayer_v5.3.121_arm64.apk",
+                                    "sha256":  "bdfc60e1a71af801511deac42d4f7ecf096cc7becad71b22b47332ac2e08f1a8"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.120_arm32.apk",
-                                      "sha256":  "b268a5e7d9c03b9fb5b4428680d8d28769d6e202a20b3d27e5487f6c0331153a"
+                                      "name":  "Streamplayer_v5.3.121_arm32.apk",
+                                      "sha256":  "a7de1c4ce3ef3457e602de5e67dadb276d77e9a27a5813428852ef6993745ca5"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.120_x86_64.apk",
-                                 "sha256":  "9e18a837ad7f67315e74e8179d766583416a8673340012efbf3d15240a672611"
+                                 "name":  "Streamplayer_v5.3.121_x86_64.apk",
+                                 "sha256":  "687113cd0fbae0a95a9830f9d3867a86d8695a80ac070ce880718b4a5cffa65d"
                              }
               }
 }
