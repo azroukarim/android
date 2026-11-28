@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.112",
-    "notes":  "Sous-titres: titre extrait du nom VOD avec prefixe chaine, et verification du nom de release OpenSubtitles.",
+    "version":  "5.3.113",
+    "notes":  "Sous-titres: selection de la version dont la fin correspond exactement a la duree du film.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.112_arm64.apk",
-                                    "sha256":  "793e7e5d02c05aa21f04ceccbf3dfa426bb754f67da4d19d8a78eae129a5a626"
+                                    "name":  "Streamplayer_v5.3.113_arm64.apk",
+                                    "sha256":  "34d89955b1aa5198bb4ad9de5adfe49ab87aadc56ec24c94afe27523fd3f95f4"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.112_arm32.apk",
-                                      "sha256":  "cd316e2fc59eaa126bf21bf689c334f79263afa116812492126a6e2f564a09bb"
+                                      "name":  "Streamplayer_v5.3.113_arm32.apk",
+                                      "sha256":  "02d07ce20fa845231dfc66b4a5b2206fd38be6ab5bc44b59f6db71985221ef24"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.112_x86_64.apk",
-                                 "sha256":  "fd55c2e6a5223eee3dccdc839f80aab91ab49cc1785cc3fd2e9ca203343284ad"
+                                 "name":  "Streamplayer_v5.3.113_x86_64.apk",
+                                 "sha256":  "2b6f5c552fcff5a827feb758044267f433c0b05331e8230f437219f44fbc9fc6"
                              }
               }
 }
