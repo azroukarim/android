@@ -1,18 +1,18 @@
 {
-    "version":  "5.3.102",
-    "notes":  "En direct: liste des bouquets alignee sur la liste des chaines (12.5px, w500/w700, sans contour).",
+    "version":  "5.3.103",
+    "notes":  "EPG sous la Mini TV: defilement horizontal (marquee) des titres longs avec fondu aux bords.",
     "files":  {
                   "arm64-v8a":  {
-                                    "name":  "Streamplayer_v5.3.102_arm64.apk",
-                                    "sha256":  "367394284ecff245c6ca0d13705612cad245e08208fce8eaf8d8ba5c920a8967"
+                                    "name":  "Streamplayer_v5.3.103_arm64.apk",
+                                    "sha256":  "e0ca6842514f2a3b7371b6a4fc385ec30d24addc4e5e726d3c057376d8af4410"
                                 },
                   "armeabi-v7a":  {
-                                      "name":  "Streamplayer_v5.3.102_arm32.apk",
-                                      "sha256":  "5e724929391b5fcc1ab2d980218590ee7c0eab6c425a67601272fa2eddc6a5cd"
+                                      "name":  "Streamplayer_v5.3.103_arm32.apk",
+                                      "sha256":  "914633b5f94eecc6ccdcba85e14be6c2521205227a98875d2e3ff25e44ab3a22"
                                   },
                   "x86_64":  {
-                                 "name":  "Streamplayer_v5.3.102_x86_64.apk",
-                                 "sha256":  "1ee79e5e7379bf69aa8db93cb7b2be99838d24b272026e70b213f41685336df7"
+                                 "name":  "Streamplayer_v5.3.103_x86_64.apk",
+                                 "sha256":  "bf2d4db6443da04da4fa293cdf35f9f75c2babbdefe3ef481ff199d5ec1d1a41"
                              }
               }
 }
